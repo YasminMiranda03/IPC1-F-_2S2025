@@ -7,7 +7,8 @@ class Personaje{
     String nombre;
     String arma;
     String[] habilidades;      //vector
-    int ID;
+    private static int contadorID = 1;
+    private int ID;
     int nivelPoder;
   
     //constructor sirve para que las variables no se confundan con los parametros
@@ -15,7 +16,7 @@ class Personaje{
         this.nombre = nombre;
         this.arma = arma;
         this.habilidades = habilidades;
-        this.ID = ID;
+        this.ID = contadorID++;
         this.nivelPoder = nivelPoder;
     }
     //*Getters para la clase personaje*/
@@ -44,14 +45,17 @@ class Personaje{
     public void sethablidades(String[] habilidades){
         this.habilidades = habilidades;
     }
-    public void setID(int ID){
-        this.ID = ID;
-    }
     public void setnivelPoder(int nivelPoder){
         this.nivelPoder = nivelPoder;
     }
+    @Override
     public String toString(){
-        return "Datos del personaje" + "Nombre:" + nombre + "Arma:" + arma + "Hablilidades:" + habilidades + "Nivel de Poder" + nivelPoder;
+        return "--Datos del personaje--" + 
+                "Nombre: " + nombre + 
+                "Arma: " + arma + 
+                "Hablilidades: " + habilidades + 
+                "Nivel de Poder: " + nivelPoder +
+                "ID: " + ID;
 }
 }
 //*Clase para representar las peleas*/
@@ -72,29 +76,32 @@ class Pelea{
    public Personaje getpersonaje2(){
        return personaje2;
    }
-   public Personaje getpersonajeGanador(){
-       return personajeGanador;
+   public LocalDateTime getfechaHora(){
+       return fechaHora;
    }
+   
    //*Setters para la clase Pelea*/
    public void setpersonaje1(Personaje personaje1){
        this.personaje1 = personaje1;
    }
    public void setpersonaje2(Personaje personaje2){
        this.personaje2 = personaje2;
-   }
-   public void setpersonajeGanador(Personaje personajeGanador){
-       this.personajeGanador = personajeGanador;
-   }
+   
    public String toString(){
-       return "Personaje 1:" + personaje1 + "Personaje 2:" + personaje2 + "Fecha y hora: " + fechaHora;
+       return "Personaje 1: " + personaje1 + "Personaje 2: " + personaje2 + "Fecha y hora: " + fechaHora;
    }
-}
+   @Override
+   public String toString(){
+       return "Pelea entre " + personaje1.getnombre() + "vs" + personaje2.getnombre() + "Fecha y hora: ";
+   }
+ }
+
 //*Clase para almacenar el historial de peleas*/
 class HistorialPeleas{
     Pelea[] peleas;  //representacion de un vector
     int cantidadPeleas;
     //*Constructor*/
-    HistorialPeleas(){    
+    public HistorialPeleas(){    
         this.peleas = new Pelea[10];    //10 es la cantidad maxima de peleas
         this.cantidadPeleas = 0;    //aqui inicia el contador de cantidadPeleas en 0
     }
@@ -143,8 +150,9 @@ class Estudiante{
     public void setcarnet(int carnet){
         this.carnet = carnet;
     }
+    @Override
     public String toString(){
-        return "Nombre:" + nombre + "Carnet:" + carnet; 
+        return "Nombre:\n" + nombre + "\n" + " Carnet: " + carnet; 
     }
 }
 
@@ -158,26 +166,35 @@ class Menu{
     System.out.println("4. Datos del personaje");
     System.out.println("5. Listado de personajes");
     System.out.println("6. Historial de peleas");
-    System.out.println("7. Historial de peleas");
+    System.out.println("7. Historial de personajes");
     System.out.println("8. Ver datos del estudiante");
     System.out.println("9. Salir");
     }
 }
+
 //*Clase Principal*/
 public class JuegoPokemon{
 static final int NUM_PERSONAJES = 25;
 static Personaje[] personajes = new Personaje[NUM_PERSONAJES];
 static Scanner sc = new Scanner(System.in);
+static Estudiante estudiante;   //declaracion de estudiante
+static HistorialPeleas historial = new HistorialPeleas();
 
 public static void main(String[] args){
+    System.out.print("Ingrese su nombre: ");
+    String nombre = sc.nextLine();
+    System.out.print("Ingrese su carnet: ");
+    int carnet = sc.nextInt();
+    sc.nextLine();  //limpia el buffer
+    estudiante = new Estudiante(nombre, carnet);
+    
     Menu menuPrincipal = new Menu();
     int opcion;
     do {
         menuPrincipal.mostrarMenu();
-        opcion = LeerEntero("Seleccione una opción");
+        opcion = LeerEntero("Seleccione una opcion: ");
         switch(opcion) {
             case 1:
-                System.out.println("Usted va a agregar un personaje");
                 agregarPersonaje();
                 break;
             case 2:
@@ -197,19 +214,19 @@ public static void main(String[] args){
                 listadoPersonajes();
                 break;
             case 6:
-                System.out.println("Usted va a agregar un personaje");
+                System.out.println("--Historial de peleas--");
                 registrarPelea();
                 break;
             case 7:
-                System.out.println("Usted va a agregar un personaje");
+                System.out.println("--Historial de personajes--");
                 historialPeleas();
                 break;
             case 8:
-                System.out.println("Usted va a agregar un personaje");
+                System.out.println("--Datos del estudiante--");
                 datosEstudiantes();
                 break;
             case 9:
-                System.out.println("Saliendo");
+                System.out.println("--Saliendo--");
                 break;
             default:
                 System.out.println("opción no valida");       
@@ -217,14 +234,25 @@ public static void main(String[] args){
         System.out.println();
     } while (opcion != 9);
 }
+//**Métodos de lectura*/
+static String leerTexto(String mensaje){
+    System.out.print(mensaje);
+    return sc.nextLine();
+}
+static int LeerEntero(String mensaje){
+    System.out.print(mensaje);
+    return sc.nextInt();
+}
     
    
 //**Funciones del menú*/
 static void agregarPersonaje(){
     String nombre = leerTexto("Ingrese el nombre del personaje: ");
+    sc.nextLine();
     String arma = leerTexto("Ingrese el arma: ");
     int ID = LeerEntero("Ingrese el ID del personaje: ");
-    int nivelPoder = LeerEntero("Ingrese el nivel de poder: ");
+    int nivelPoder = LeerEntero("Ingrese el nivel de poder entre 1-100: ");
+    sc.nextLine();
     String[] habilidades = new String[3];
     for (int i = 0; i < habilidades.length; i++){
         habilidades[i] = leerTexto("Ingrese la habilidad " + (i + 1));
@@ -240,12 +268,12 @@ static void agregarPersonaje(){
         System.out.println("No se pueden agregar mas personajes");
 }
 static void modificarPersonaje(){
-    int ID = LerrEntero("Ingrese el ID del personaje: ");
+    int ID = LeerEntero("Ingrese el ID del personaje: ");
     for (Personaje p : personajes){
         if (p != null && p.getID() == ID){
-            p.setnombre(leerTexto("Nuevo nombre: "));
-            p.setarma(leerTexto("Nueva arma: ");
-            p.setnivelPoder(LeerEntero("Nuevo nivel de poder: ");
+            sc.nextLine();
+            p.setarma(leerTexto("Nueva arma: "));
+            p.setnivelPoder(LeerEntero("Nuevo nivel de poder: "));
             System.out.println("El personaje ha sido modificado");
             return;
         }
@@ -274,11 +302,14 @@ static void datosPersonaje(){
     System.out.println("No se encontro el personaje");
 }
 static void listadoPersonajes(){
+    boolean existencia = false; //verifica existencia de los personajes
     for (Personaje p : personajes){
         if (p != null){
             System.out.println(p);
+            existencia = true;
         }
     }
+    if (!existencia)System.out.println("NO hay personajes registrados");
 }
 static void registrarPelea(){
     int ID1 = LeerEntero("Ingrese el ID del personaje 1: ");
@@ -299,5 +330,12 @@ static void registrarPelea(){
 
     static void datosEstudiantes() {
         System.out.println(estudiante.toString());
+    }
+    //*Metodo para buscar*/
+    static Personaje buscarPersonajePorID(int ID){
+        for (Personaje p : personajes){
+            if (p != null && p.getID() == ID) return p;yasyass
+        }
+        return null;
     }
 }
