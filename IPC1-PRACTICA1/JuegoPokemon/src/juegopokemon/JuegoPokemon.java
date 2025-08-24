@@ -1,6 +1,6 @@
 package juegopokemon;
-import java.util.Scanner;
-import java.time.LocalDateTime;
+import java.util.Scanner;   //para leer los datos
+import java.time.LocalDateTime; //para el tiempo
 
 //**Clase para representar al personaje*/
 class Personaje{
@@ -51,11 +51,11 @@ class Personaje{
     @Override
     public String toString(){
         return "--Datos del personaje--" + 
-                "Nombre: " + nombre + 
-                "Arma: " + arma + 
-                "Hablilidades: " + habilidades + 
-                "Nivel de Poder: " + nivelPoder +
-                "ID: " + ID;
+                "\nNombre: " + nombre + 
+                "\nArma: " + arma + 
+                "\nHablilidades: " + habilidades + 
+                "\nNivel de Poder: " + nivelPoder +
+                "\nID: " + ID;
 }
 }
 //*Clase para representar las peleas*/
@@ -86,13 +86,10 @@ class Pelea{
    }
    public void setpersonaje2(Personaje personaje2){
        this.personaje2 = personaje2;
-   
-   public String toString(){
-       return "Personaje 1: " + personaje1 + "Personaje 2: " + personaje2 + "Fecha y hora: " + fechaHora;
    }
-   @Override
+    @Override
    public String toString(){
-       return "Pelea entre " + personaje1.getnombre() + "vs" + personaje2.getnombre() + "Fecha y hora: ";
+       return "Pelea entre " + personaje1.getnombre() + "vs" + personaje2.getnombre() + "Fecha y hora: " + fechaHora;
    }
  }
 
@@ -121,13 +118,17 @@ class HistorialPeleas{
             System.out.println("No hay registro de peleas");
         }
         else
-            System.out.println("El historial de peleas es: " + peleas.length);
+            System.out.println("El historial de peleas es: ");
+        for (int i = 0; i < cantidadPeleas; i++){
+            System.out.println(peleas[i]);
+        }
         }
     }
  
 class HistorialPersonajes{
     
 }
+//*Clase para almacenar el registro del estudiante*/
 class Estudiante{
     String nombre;
     int carnet;
@@ -152,13 +153,13 @@ class Estudiante{
     }
     @Override
     public String toString(){
-        return "Nombre:\n" + nombre + "\n" + " Carnet: " + carnet; 
+        return "Nombre:" + nombre + "\n" + "Carnet: " + carnet; 
     }
 }
 
 //*Clase del menú*/
 class Menu{
-    public void mostrarMenu(){
+    public static void mostrarMenu(){
     System.out.println("----MENU PRINCIPAL---");
     System.out.println("1. Agregar personaje");
     System.out.println("2. Modificar personaje");
@@ -334,7 +335,7 @@ static void registrarPelea(){
     //*Metodo para buscar*/
     static Personaje buscarPersonajePorID(int ID){
         for (Personaje p : personajes){
-            if (p != null && p.getID() == ID) return p;yasyass
+            if (p != null && p.getID() == ID) return p;
         }
         return null;
     }
