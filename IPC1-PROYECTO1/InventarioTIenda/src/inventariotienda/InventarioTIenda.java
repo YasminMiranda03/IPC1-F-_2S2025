@@ -9,7 +9,12 @@ package inventariotienda;
  * @author APROJUSA
  */
 class AgregarProducto{
-    
+    Producto[] productos;
+    int contador;
+    AgregarProducto(Producto[], int contador){
+        productos = productos;
+        contador = contador;
+    }
 }
 
 class BuscarProducto{
@@ -60,7 +65,27 @@ class Bitacora{
     
 }
 class Menu{
-    
+    do{
+        System.out.println("--Menú--");
+        System.out.println("1. Agregar nuevo producto")
+        System.out.println("2. Ver inventario")
+        System.out.println("3. Eliminar producto")
+        switch(opcion){
+            case 1:
+                System.out.println("funciona?");
+                break;
+            case 2:
+                System.out.println("a lo mejor y si");
+                break;
+            case 3:
+                System.out.println("ojala que si");
+                break;
+        }
+                
+    }
+    while{
+        opcion (!= 9);
+    }
 }
 
 public class InventarioTIenda {
