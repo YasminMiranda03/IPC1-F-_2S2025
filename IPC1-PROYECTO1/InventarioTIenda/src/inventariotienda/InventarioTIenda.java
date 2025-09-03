@@ -8,29 +8,20 @@ package inventariotienda;
  *
  * @author APROJUSA
  */
-class AgregarProducto{
-    Producto[] productos;
-    int contador;
-    AgregarProducto(Producto[], int contador){
-        productos = productos;
-        contador = contador;
+class Producto {
+    String nombre;
+    String categoria;
+    int cantidad;
+    int codigo;
+    double precio;
+    
+    public Producto(String nombre, String categoria, int cantidad, int codigo, double precio){
+        this.nombre = nombre;
+        this.categoria = categoria;
+        this.codigo = codigo;
+        this.cantidad = cantidad;
+        this.precio = precio;
     }
-}
-
-class BuscarProducto{
-    
-}
-
-class EliminarProducto{
-    
-}
-
-class RegistrarVenta{
-    
-}
-
-class GenerarReporte{
-    
 }
 
 class Estudiante{
