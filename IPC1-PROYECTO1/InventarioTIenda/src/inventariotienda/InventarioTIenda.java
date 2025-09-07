@@ -38,7 +38,7 @@ class Inventario{
                     System.out.println("Inventario lleno");
                     return false;
                 }
-                int i = 0;
+                int i = 0; //verificacion de duplicado 
                 while (i < contador){
                     if (producto[i] != null && productos[i].codigo != null && producto[i].codigo.equallsIgnoreCase(p.codigo)){
                         System.out.println("Ya existe un producto con ese codigo");
@@ -46,6 +46,37 @@ class Inventario{
                     }
                     i = i + 1;
                 }
+                productos[contador] = p;
+                contador = contador +1;
+                System.out.println("Producto agregado");
+                return true;
+            }
+            public void buscarProducto(String criterio){ //aqui preguntar todo sobre variables y porque 
+                boolean algo = false;
+                for (int i = 0; i < contador; i++){
+                    Producto px = producto[i];
+                    if (px != null){
+                        if (px.codigo != null && px.codigo.equalsIgnoreCase(criterio)){
+                            px.mostrarProducto();
+                            algo = true;
+                        }
+                        if (px.nombre != null && px.nombre.equalsIgnoreCase(criterio)){
+                            px.mostrarProducto();
+                            algo = true;
+                        }
+                        if (px.categoria != null && px.categoria.equalsIgnoreCase(criterio)){
+                            px.mostrarProducto();
+                            algo = true;
+                        }
+                    }
+                }
+                if (algo == false){
+                    System.out.println("No se encuentra registrado");
+                }
+            }
+            public boolean eliminarProducto(String cod){
+                int pos = -1;
+                for (int i = 0;)
             }
 }
 class Estudiante{
