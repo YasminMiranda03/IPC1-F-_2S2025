@@ -16,14 +16,38 @@ class Producto {
     double precio;
     
     public Producto(String nombre, String categoria, int cantidad, int codigo, double precio){
-        this.nombre = nombre;
-        this.categoria = categoria;
-        this.codigo = codigo;
-        this.cantidad = cantidad;
-        this.precio = precio;
+        nombre = nombre;
+        categoria = categoria;
+        codigo = codigo;
+        cantidad = cantidad;
+        precio = precio;
+    }
+    public void mostrarProducto(){
+        System.out.println("Nombre:" + nombre);
+        System.out.println("Categoria:" + categoria);
+        System.out.println("Código:" + codigo);
+        System.out.println("Cantidad:" + cantidad);
+        System.out.println("Precio en Q:" + precio);
     }
 }
-
+class Inventario{
+    public Producto[] productos = new Producto[50]
+            public int contador = 0;
+            public boolean agregarProducto(Producto){
+                if (contador >= 50){
+                    System.out.println("Inventario lleno");
+                    return false;
+                }
+                int i = 0;
+                while (i < contador){
+                    if (producto[i] != null && productos[i].codigo != null && producto[i].codigo.equallsIgnoreCase(p.codigo)){
+                        System.out.println("Ya existe un producto con ese codigo");
+                        return false;
+                    }
+                    i = i + 1;
+                }
+            }
+}
 class Estudiante{
     String nombre;
     int carnet;
@@ -86,6 +110,7 @@ public class InventarioTIenda {
      */
     public static void main(String[] args) {
         // TODO code application logic here
+        System.out.println("");
     }
     
 }
