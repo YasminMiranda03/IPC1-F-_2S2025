@@ -8,6 +8,7 @@ package inventariotienda;
  *
  * @author APROJUSA
  */
+//CLASE PRODUCTO
 class Producto {
     String nombre;
     String categoria;
@@ -30,55 +31,88 @@ class Producto {
         System.out.println("Precio en Q:" + precio);
     }
 }
+//CLASE INVENTARIO
 class Inventario{
-    public Producto[] productos = new Producto[50]
-            public int contador = 0;
-            public boolean agregarProducto(Producto){
-                if (contador >= 50){
+    public Producto[] listaProductos = new Producto[50]
+            public int totalProductos = 0;
+            public boolean agregarProducto(Producto nuevoProducto){
+                if (totalProductos >= 50){
                     System.out.println("Inventario lleno");
                     return false;
                 }
-                int i = 0; //verificacion de duplicado 
-                while (i < contador){
-                    if (producto[i] != null && productos[i].codigo != null && producto[i].codigo.equallsIgnoreCase(p.codigo)){
+                 //verificacion de duplicado 
+                for (int i = 0; i < totalProductos; i ++){
+                    if (listaProductos[i] != null && listaProductos[i].codigoProducto != null && listaProductos[i].codigoProducto.equalsIgnoreCase(nuevoProducto.codigoProducto))
                         System.out.println("Ya existe un producto con ese codigo");
-                        return false;
-                    }
-                    i = i + 1;
+                    return false;
                 }
-                productos[contador] = p;
-                contador = contador +1;
-                System.out.println("Producto agregado");
+            
+            listaProductos[totalProductos] = nuevoProducto;
+            totalProductos++;
+            System.out.println("Producto agregado");
+            return true
+            }
+            public void buscarProducto(String busqueda){ //
+                boolean encontrado = false;
+                for (int i = 0; i < totalProductos; i++){
+                    Producto productoActual = listaProductos[i];
+                    if (productoActual != null){
+                        if (productoActual.codigoProducto.equalsIgnoreCase(busqueda) ||
+                            productoActual.nombre.equalsIgnoreCase(busqueda) ||
+                            productoActual.categoriaProducto.equalsIgnoreCase(busqueda)){
+                            productoActual.mostrarProducto();
+                            encontrado = true
+                        }
+                    }
+                }
+                if (!encontrado){
+                    System.out.println("No se encontro nada");
+                }
+            public boolean eliminarProducto(String codigoEliminar){
+                int indiceEliminar = -1;
+                for (int i = 0; i < totalProductos; i++){
+                    if (listaProductos[i] != null && listaProductos[i].codigoProducto.equalsIgnoreCase(codigoEliminar)){
+                        indiceEliminar = i;
+                        break;
+                    }
+                }
+                if (indiceEliminar == -1){
+                    System.out.println("No existe ese codigo");
+                    return false;
+                }
+                for (int j = indiceEliminar; j < totalProductos -1; j++){
+                    listaProductos[j] = productos[j + 1];
+                }
+                listaProductos[totalProductos -1] = null;
+                totalProductos--; //aqui porque lleva --
+                System.out.println("Eliminado");
                 return true;
             }
-            public void buscarProducto(String criterio){ //aqui preguntar todo sobre variables y porque 
-                boolean algo = false;
-                for (int i = 0; i < contador; i++){
-                    Producto px = producto[i];
-                    if (px != null){
-                        if (px.codigo != null && px.codigo.equalsIgnoreCase(criterio)){
-                            px.mostrarProducto();
-                            algo = true;
-                        }
-                        if (px.nombre != null && px.nombre.equalsIgnoreCase(criterio)){
-                            px.mostrarProducto();
-                            algo = true;
-                        }
-                        if (px.categoria != null && px.categoria.equalsIgnoreCase(criterio)){
-                            px.mostrarProducto();
-                            algo = true;
+            public void mostrarInventario(){
+                if(totalProductos == 0){
+                    System.out.println("Inventario vacio");
+                }
+                    else{
+                    System.out.println("--Inventario--");
+                        for(int i = 0; totalProductos; i++){
+                            if(listaProductos[i] != null){
+                                listaProductos[i].mostrarProducto();
+                            }
                         }
                     }
                 }
-                if (algo == false){
-                    System.out.println("No se encuentra registrado");
-                }
+             public Producto obtenerProducto(String codigoBuscar) {
+        for (int i = 0; i < totalProductos; i++) {
+            if (listaProductos[i] != null &&
+                listaProductos[i].codigoProducto.equalsIgnoreCase(codigoBuscar)) {
+                return listaProductos[i];
             }
-            public boolean eliminarProducto(String cod){
-                int pos = -1;
-                for (int i = 0;)
-            }
+        }
+        return null;
+    }
 }
+            
+//CLASE ESTUDIANTE
 class Estudiante{
     String nombre;
     int carnet;
