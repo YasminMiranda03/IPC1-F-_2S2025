@@ -304,7 +304,10 @@ class ReportePDF{
         }
     }
 }
-            
+
+ class Bitacora{
+     
+ }           
 //CLASE ESTUDIANTE
 class Estudiante{
     String nombre;
