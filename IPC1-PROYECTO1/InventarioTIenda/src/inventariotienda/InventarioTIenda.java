@@ -303,11 +303,7 @@ class ReportePDF{
             } catch (Exception e) {}
         }
     }
-}
-
- class Bitacora{
-     
- }           
+}          
 //CLASE ESTUDIANTE
 class Estudiante{
     String nombre;
