@@ -35,80 +35,273 @@ class Producto {
 class Inventario{
     public Producto[] listaProductos = new Producto[50]
             public int totalProductos = 0;
+            
             public boolean agregarProducto(Producto nuevoProducto){
                 if (totalProductos >= 50){
                     System.out.println("Inventario lleno");
                     return false;
                 }
                  //verificacion de duplicado 
-                for (int i = 0; i < totalProductos; i ++){
-                    if (listaProductos[i] != null && listaProductos[i].codigoProducto != null && listaProductos[i].codigoProducto.equalsIgnoreCase(nuevoProducto.codigoProducto))
-                        System.out.println("Ya existe un producto con ese codigo");
-                    return false;
+                int i = 0;
+                while (i < totalProductos) {
+                    Producto productoActual = listaProductos[i];
+                    if (productoActual != null) {
+                        if (productoActual.codigoProducto != null) {
+                            if (productoActual.codigoProducto.equalsIgnoreCase(nuevoProducto.codigoProducto)) {
+                                System.out.println("Ya existe un producto con ese codigo");
+                                return false;
+                            }
+                        }
+                    }
+                    i = i++;
                 }
             
             listaProductos[totalProductos] = nuevoProducto;
             totalProductos++;
             System.out.println("Producto agregado");
-            return true
+            return true;
             }
-            public void buscarProducto(String busqueda){ //
+            
+            public void buscarProducto(String criterioBusqueda){ //
                 boolean encontrado = false;
-                for (int i = 0; i < totalProductos; i++){
+                int i = 0;
+                while (i < totalProductos) {
                     Producto productoActual = listaProductos[i];
-                    if (productoActual != null){
-                        if (productoActual.codigoProducto.equalsIgnoreCase(busqueda) ||
-                            productoActual.nombre.equalsIgnoreCase(busqueda) ||
-                            productoActual.categoriaProducto.equalsIgnoreCase(busqueda)){
-                            productoActual.mostrarProducto();
-                            encontrado = true
-                        }
+                    if (productoActual != null) {
+                        if (productoActual.codigoProducto != null) {
+                            if (productoActual.codigoProducto.equalsIgnoreCase(criterioBusqueda)) {
+                                productoActual.mostrarProducto();
+                                encontrado = true;
                     }
                 }
-                if (!encontrado){
-                    System.out.println("No se encontro nada");
+                if (productoActual.nombreProducto != null) {
+                    if (productoActual.nombreProducto.equalsIgnoreCase(criterioBusqueda)) {
+                        productoActual.mostrarProducto();
+                        encontrado = true;
+                    }
                 }
+                if (productoActual.categoriaProducto != null) {
+                    if (productoActual.categoriaProducto.equalsIgnoreCase(criterioBusqueda)) {
+                        productoActual.mostrarProducto();
+                        encontrado = true;
+                    }
+                }
+            }
+            i = i++;
+        }
+        if (encontrado == false) {
+            System.out.println("No se encontro nada");
+                }
+            }
             public boolean eliminarProducto(String codigoEliminar){
                 int indiceEliminar = -1;
-                for (int i = 0; i < totalProductos; i++){
-                    if (listaProductos[i] != null && listaProductos[i].codigoProducto.equalsIgnoreCase(codigoEliminar)){
-                        indiceEliminar = i;
-                        break;
+                int i = 0;
+                while (i < totalProductos){
+                    Producto productoActual = listaProductos[i];
+                    if (productoActual != null){
+                        if (productoActual.codigoProducto != null){
+                            if(productoActual.codigoProducto.equalsIgnoreCase(codigoEliminar)){
+                                indiceEliminar = i;
+                                break;
+                            }
+                        }
                     }
+                    i = i++;
                 }
                 if (indiceEliminar == -1){
                     System.out.println("No existe ese codigo");
                     return false;
                 }
-                for (int j = indiceEliminar; j < totalProductos -1; j++){
-                    listaProductos[j] = productos[j + 1];
+                int j = indiceEliminar;
+                while (j < totalProductos -1){
+                    listaProductos[j] = listaProductos[j + 1];
+                    j = j++
                 }
                 listaProductos[totalProductos -1] = null;
-                totalProductos--; //aqui porque lleva --
+                totalProductos = totalProductos -1;
                 System.out.println("Eliminado");
                 return true;
             }
             public void mostrarInventario(){
                 if(totalProductos == 0){
                     System.out.println("Inventario vacio");
-                }
-                    else{
+                } else{
+                    int i = 0;
                     System.out.println("--Inventario--");
-                        for(int i = 0; totalProductos; i++){
-                            if(listaProductos[i] != null){
+                        while ( i < totalProductos){
+                            if (listaProductos[i] != null){
                                 listaProductos[i].mostrarProducto();
                             }
+                            i = i++
                         }
                     }
                 }
-             public Producto obtenerProducto(String codigoBuscar) {
-        for (int i = 0; i < totalProductos; i++) {
-            if (listaProductos[i] != null &&
-                listaProductos[i].codigoProducto.equalsIgnoreCase(codigoBuscar)) {
-                return listaProductos[i];
+            
+             public Producto obtenerProducto(String codigoBuscar){
+                 int i = 0;
+                 while (i < totalProductos){
+                     Producto productoActual = listaProductos[i];
+                     if (productoActual != null){
+                         if (productoActual.codigoProducto != null){
+                             if (productoActual.codigoProducto.equalsIgnoreCase(codigoBuscar)){
+                                 return productoActual;
+                             }
+                         }
+                     }
+                     i = i++
+                 }
+                 return null;
+             }
+}
+//CLASE VENTA
+class Venta{
+    public static void registrarVenta(Inventario inventario, String codigoVenta,int cantidadVenta, String usuario){
+        Producto productoVendido = inventario.obtenerProducto(codigoVenta);
+        if (productoVendido == null){
+            System.out.println("No existe el producto");
+            Bitacora.registrarAccion("Registrar venta", "Fallida", usuario);
+            return;
+        } else {
+            if (productoVendido.cantidadProducto < cantidadVenta){
+                System.out.println("No hay suficiente stock");
+                Bitacora.registrarAccion("Registrar venta", "Fallida", usuario);
+                return;
+            }else {
+               productoVendido.cantidadProducto = productoVendido.cantidadProducto - cantidadVenta;
+                double totalVenta = productoVendido.precioProducto * cantidadVenta;
+
+                LocalDateTime fechaHora = LocalDateTime.now();
+                DateTimeFormatter formatoFecha = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+                String fechaTexto = fechaHora.format(formatoFecha); 
+                
+                try {
+                    FileWritter archivoVentas = new FileWritter("ventas.txt", true);
+                    archivoVentas.write("Producto: " + productoVendido.nombreProducto + " | Codigo: " + productoVendido.codigoProducto +
+                                        " | Cantidad: " + cantidadVenta + " | Total: Q" + totalVenta +
+                                        " | Fecha: " + fechaTexto + "\n");
+                    archivoVentas.close();
+                    System.out.println("Venta registrada!");
+                    Bitacora.registrarAccion("Registrar venta", "Correcta", usuario);
+                }catch (Exception e){
+                System.out.println("Error guardando en venta");
+                Bitacora.registrarAccion("Registrar venta", "error", usuario);
+                }
             }
         }
-        return null;
+    }
+}
+//CLASE BITACORA
+class Bitacora{
+    public static void registrarAccion(String accion, String resultado, String usuario){
+        try{
+            LocalDateTime fechaHora = LocalDateTime.now();
+            DateTimeFormatter formatoFecha = DateTimeFormatter.ofPattern("dd_MM_YYYY_HH_mm_ss");
+            String nombreArchivo = formato.format(fechaHora) + "_Venta.pdf";
+            
+            Document doc = new Document();
+            try{
+                PdfWriter.get.Instance(doc, new FileOutputStrea,(nombreArchivo));
+                doc.open();
+                doc.add(new Paragraph("Reporte de ventas\n\n"));
+                
+                try {
+                    scanner lector = new Scanner(new File("ventas.txt"));
+                    while (lector.hasNextLine()){
+                        String linea = lector.nextLine();
+                        doc.add(new Paragraph(linea));
+                    }
+                    lector.close();
+                }
+                catch (Exception e){
+                    doc.add(new Paragraph("No hay ventas registradas"));
+                }
+                System.out.println("PDF de ventas creado" + nombreArchivo);
+                Bitacora.registrarAccion("Generar reporte de ventas", "Correcta", usuario);
+            }
+            catch (Exception e){
+                System.out.println("No se pudo generar el PDf de ventas");
+                Bitacora.registrarAccion("Generar reporde de ventas", "Error", usuario);
+            }
+            finally{
+                doc.close();
+            }
+        }
+    }
+}
+
+//CLASE REPORTE DE PDF
+class ReportePDF{
+     public static void generarReporteStock(Inventario inventario, String usuario) {
+        LocalDateTime fechaHora = LocalDateTime.now();
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd_MM_yyyy_HH_mm_ss");
+        String nombreArchivo = formato.format(fechaHora) + "_Stock.pdf";
+        Document doc = new Document();
+        try {
+            PdfWriter.getInstance(doc, new FileOutputStream(new File(nombreArchivo)));
+            doc.open();
+            doc.add(new Paragraph("Reporte de Stock\n\n"));
+            PdfPTable tabla = new PdfPTable(5);
+            tabla.addCell("Codigo");
+            tabla.addCell("Nombre");
+            tabla.addCell("Categoria");
+            tabla.addCell("Precio");
+            tabla.addCell("Cantidad");
+
+            int i = 0;
+            while (i < inventario.totalProductos) {
+                Producto p = inventario.listaProductos[i];
+                if (p != null) {
+                    tabla.addCell(p.codigoProducto);
+                    tabla.addCell(p.nombreProducto);
+                    tabla.addCell(p.categoriaProducto);
+                    tabla.addCell("Q" + p.precioProducto);
+                    tabla.addCell(String.valueOf(p.cantidadProducto));
+                }
+                i = i + 1;
+            }
+
+            doc.add(tabla);
+            System.out.println("PDF stock creado: " + nombreArchivo);
+            Bitacora.registrarAccion("Generar reporte stock", "Correcta", usuario);
+        } catch (Exception e) {
+            System.out.println("No se pudo generar el PDF de stock");
+            Bitacora.registrarAccion("Generar reporte stock", "Error", usuario);
+        } finally {
+            try {
+                doc.close();
+            } catch (Exception e) {}
+        }
+    }
+
+    public static void generarReporteVentas(String usuario) {
+        LocalDateTime fechaHora = LocalDateTime.now();
+        DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd_MM_yyyy_HH_mm_ss");
+        String nombreArchivo = formato.format(fechaHora) + "_Venta.pdf";
+        Document doc = new Document();
+        try {
+            PdfWriter.getInstance(doc, new FileOutputStream(nombreArchivo));
+            doc.open();
+            doc.add(new Paragraph("Reporte de Ventas\n\n"));
+            try {
+                Scanner lector = new Scanner(new File("ventas.txt"));
+                while (lector.hasNextLine()) {
+                    String linea = lector.nextLine();
+                    doc.add(new Paragraph(linea));
+                }
+                lector.close();
+            } catch (Exception e) {
+                doc.add(new Paragraph("No hay ventas registradas"));
+            }
+            System.out.println("PDF ventas creado: " + nombreArchivo);
+            Bitacora.registrarAccion("Generar reporte ventas", "Correcta", usuario);
+        } catch (Exception e) {
+            System.out.println("No se pudo generar el PDF de ventas");
+            Bitacora.registrarAccion("Generar reporte ventas", "Error", usuario);
+        } finally {
+            try {
+                doc.close();
+            } catch (Exception e) {}
+        }
     }
 }
             
@@ -141,9 +334,7 @@ class Estudiante{
     }
 }
 
-class Bitacora{
-    
-}
+
 class Menu{
     do{
         System.out.println("--Menú--");
