@@ -8,20 +8,28 @@ package inventariotienda;
  *
  * @author APROJUSA
  */
+import java.util.Scanner;
+import java.io.FileWritter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+
 //CLASE PRODUCTO
 class Producto {
-    String nombre;
-    String categoria;
-    int cantidad;
-    int codigo;
-    double precio;
+    public String nombreProducto;
+    public String categoriaProducto;
+    public int cantidadProducto;
+    public int codigoProducto;
+    public double precioProducto;
     
     public Producto(String nombre, String categoria, int cantidad, int codigo, double precio){
-        nombre = nombre;
-        categoria = categoria;
-        codigo = codigo;
-        cantidad = cantidad;
-        precio = precio;
+        nombreProducto = nombre;
+        categoriaProducto = categoria;
+        codigoProducto = codigo;
+        cantidadProducto = cantidad;
+        precioProducto = precio;
     }
     public void mostrarProducto(){
         System.out.println("Nombre:" + nombre);
@@ -33,7 +41,7 @@ class Producto {
 }
 //CLASE INVENTARIO
 class Inventario{
-    public Producto[] listaProductos = new Producto[50]
+    public Producto[] listaProductos = new Producto[50];
             public int totalProductos = 0;
             
             public boolean agregarProducto(Producto nuevoProducto){
@@ -115,7 +123,7 @@ class Inventario{
                 int j = indiceEliminar;
                 while (j < totalProductos -1){
                     listaProductos[j] = listaProductos[j + 1];
-                    j = j++
+                    j = j++;
                 }
                 listaProductos[totalProductos -1] = null;
                 totalProductos = totalProductos -1;
@@ -132,7 +140,7 @@ class Inventario{
                             if (listaProductos[i] != null){
                                 listaProductos[i].mostrarProducto();
                             }
-                            i = i++
+                            i = i++;
                         }
                     }
                 }
@@ -148,7 +156,7 @@ class Inventario{
                              }
                          }
                      }
-                     i = i++
+                     i = i++;
                  }
                  return null;
              }
@@ -306,30 +314,18 @@ class ReportePDF{
 }          
 //CLASE ESTUDIANTE
 class Estudiante{
-    String nombre;
+    String nombreEstudiante;
     int carnet;
     
     public Estudiante(String nombre, int carnet){
-        this.nombre = nombre;
-        this.carnet = carnet;
+        nombreEstudiante = nombre;
+        carnet = carnet;
     }
-    //*Getters para la clase estudiante*/
-    public String getnombre(){
-        return nombre;
-    }
-    public int getcarnet(){
-        return carnet;
-    }
-    //*Setters para la clase estudiante*/
-    public void setnombre(String nombre){
-        this.nombre = nombre;
-    }
-    public void setcarnet(int carnet){
-        this.carnet = carnet;
-    }
-    @Override
-    public String toString(){
-        return "Nombre:" + nombre + "\n" + "Carnet: " + carnet; 
+    public void mostrarDatos(){
+        System.out.println("--Datos del estudiante--");
+        System.out.println("NOmbre: " + nombreEstudiante);
+        System.out.println("Carnet: " + carnet);
+        System.out.println("Sección F");
     }
 }
 
@@ -365,7 +361,79 @@ public class InventarioTIenda {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        System.out.println("");
+        Scanner scanner = new Scanner(System.in);
+        Inventario inventario = new Inventario();
+        Estudiante estudiante = new Estudiante();
+        
+        System.out.println("Ingrese su usuario: ");
+        String nombreUsuario = scanner.nextLine();
+        
+        //Productos ya cargados
+        Producto blusaMorada = new Producto("Blusa", "Ropa de mujer", 150.00, 10, "C001");
+        Producto pantalonNegro = new Producto("Pantalon negro", "Pantalon de mujer", 200, 20,"C002");
+        Producto chaquetaCuero = new Producto("Chaqueta de cuero", "Chaqueta", 500.50, 2,"C003" );
+        Producto vestidoFlores = new Producto("Vestido de Flores", "Vestido", 190.25, 15, "C004");
+        
+        inventario.agregarProducto(blusaMorada);
+        inventario.agregarProducto(pantalonNegro);
+        inventario.agregarProducto(chaquetaCuero);
+        inventario.agregarProducto(vestidoFlores);
+        
+        //comienza el menu
+        int opcion = 0;
+        do{
+            System.out.println("--Menú--");
+            System.out.println("1. Agregar producto");
+            System.out.println("2. Buscar producto");
+            System.out.println("3. Eliminar producto");
+            System.out.println("4. Registrar venta");
+            System.out.println("5. Mostrar inventario");
+            System.out.println("6. Generar reporte stock PDF");
+            System.out.println("7. Generar reporte de ventas PDF");
+            System.out.println("8. Mostrar bitacora");
+            System.out.println("9. Ver datos estudiante");
+            System.out.println("10. Salir");
+            System.out.println("Opcion: ");
+            
+            try {
+                opcion = Integrer.parseInt(scanner.nextLine());
+            } catch (Exception e){
+                System.out.println("Opcion invalida");
+                opcion = 0;
+            }
+            while (opcion){
+                case 1:
+                System.out.println("Nombre: ");
+                String nombre = scanner.nextLine();
+                
+                System.out.println("Categoria: ");
+                String categoria = scanner.nextLine();
+                
+                System.out.println("Precio: ");
+                double precio = 0;
+                    try{
+                        precio = Double.parseDouble(scanner.nextLine());
+                    } catch (Exception e){
+                        precio = 0;
+                    }
+                System.out.println("Cantidad: ");
+                int cantidad = 0;
+                    try{
+                        precio = Double.parseDouble(scanner.nextLine());
+                    } catch (Exception e){
+                        precio = 0;
+                    }
+                case 2:
+                case 3:
+                case 4:
+                case 5:
+                case 6:
+                case 7:
+                case 8:
+                case 9:
+                case 10:
+            }
+        }
     }
     
 }
