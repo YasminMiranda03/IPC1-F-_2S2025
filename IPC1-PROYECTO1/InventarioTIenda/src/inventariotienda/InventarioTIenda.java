@@ -423,10 +423,54 @@ public class InventarioTIenda {
                     } catch (Exception e){
                         precio = 0;
                     }
+                    System.out.println("Código: ");
+                    String codigo = scanner.nextLine();
+                    
+                    Producto nuevoProducto = new Producto(nombre, categoria, precio, cantidad, codigo);
+                    boolean agregado = inventario.agregarProducto(nuevoProducto);
+                    if (agregado == true){
+                        Bitacora.registrarAccion("Agregar producto", "Correcta", nombreUsuario);
+                    } else {
+                        Bitacora.registrarAccion("Agregar producto", "Fallida", nombreUsuario);
+                        } 
+                    break;
+                    
                 case 2:
+                System.out.println("Criterio de busqueda; ");
+                String criterioBusqueda = scanner.nextLine();
+                Inventario.buscarProducto(criterioBusqueda);
+                Bitacora.registrarAccion("Buscar producto", "Correcta", nombreUsuario);
+                break;
+                
                 case 3:
+                System.out.println("Codigo a eliminar: ");
+                String codigoEliminar = scanner.nextLine();
+                boolean eliminado = inventario.elimincarProducto(codigoEliminar);
+                if (eliminado == true){
+                    Bitacora.registrarAccion("Eliminar producto", "Correcta", nombreUsuario);
+                } else{
+                    Bitacora.registrarAccion("Eliminar producto", "Fallida", nombreUsuario);
+                }
+                break;
+                
                 case 4:
+                System.out.println("Codigo del producto; ");
+                String codigoVenta = scanner.nextLine();
+                System.out.println("Cantidad a vender: ");
+                int cantidadVenta = 0;
+                try {
+                    cantidadVenta = Integer.parseInt(scanner.nextLine());
+                } catch (Exception e){
+                    cantidadVenta = 0;
+                }
+                Venta.registrarVenta(inventario, codigoVenta, cantidadVenta, nombreUsuario);
+                break;
+                
                 case 5:
+                    inventario.mostrarInventario();
+                    Bitacora.registrarAccion("Mostrar inventario", "Correcta", nombreUsuario);
+                    break;
+                    
                 case 6:
                 case 7:
                 case 8:
