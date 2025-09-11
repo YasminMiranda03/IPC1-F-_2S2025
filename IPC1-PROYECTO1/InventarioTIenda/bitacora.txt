@@ -1,0 +1,5 @@
+Usuario: 202300537 | Accion: Mostrar inventario | Resultado: Correcta | Fecha: 10/09/2025 23:10:21
+Usuario: 202300537 | Accion: Ver datos del estudiante | Resultado: Correcta | Fecha: 10/09/2025 23:11:45
+Usuario: 2 | Accion: Ver datos del estudiante | Resultado: Correcta | Fecha: 10/09/2025 23:21:07
+Usuario: Yasmin | Accion: Ver datos del estudiante | Resultado: Correcta | Fecha: 10/09/2025 23:29:37
+Usuario: Yasmin | Accion: Buscar producto | Resultado: Correcta | Fecha: 10/09/2025 23:30:03

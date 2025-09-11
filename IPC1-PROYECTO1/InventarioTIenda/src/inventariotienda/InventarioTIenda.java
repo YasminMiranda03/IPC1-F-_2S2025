@@ -9,47 +9,61 @@ package inventariotienda;
  * @author APROJUSA
  */
 import java.util.Scanner;
-import java.io.FileWritter;
+import java.io.FileWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+//libreria para el pdf
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+//-----------------------------------------------------------------
 
 //CLASE PRODUCTO
 class Producto {
+    //atributos del producto
     public String nombreProducto;
     public String categoriaProducto;
     public int cantidadProducto;
-    public int codigoProducto;
+    public String codigoProducto;
     public double precioProducto;
     
-    public Producto(String nombre, String categoria, int cantidad, int codigo, double precio){
+    //constructor con datos
+    public Producto(String nombre, String categoria, double precio, int cantidad, String codigo){
         nombreProducto = nombre;
         categoriaProducto = categoria;
-        codigoProducto = codigo;
-        cantidadProducto = cantidad;
         precioProducto = precio;
+        cantidadProducto = cantidad;
+        codigoProducto = codigo;
     }
+    
+    //metodo para mostrar los datos de un producto
     public void mostrarProducto(){
-        System.out.println("Nombre:" + nombre);
-        System.out.println("Categoria:" + categoria);
-        System.out.println("Código:" + codigo);
-        System.out.println("Cantidad:" + cantidad);
-        System.out.println("Precio en Q:" + precio);
+        System.out.println("Nombre:" + nombreProducto);
+        System.out.println("Categoria:" + categoriaProducto);
+        System.out.println("Código:" + codigoProducto);
+        System.out.println("Cantidad:" + cantidadProducto);
+        System.out.println("Precio en Q:" + precioProducto);
     }
 }
+//------------------------------------------------------------------------------------
+
 //CLASE INVENTARIO
 class Inventario{
+    //aqui guardo los productos
     public Producto[] listaProductos = new Producto[50];
-            public int totalProductos = 0;
-            
+    public int totalProductos = 0;
+    
+    //metodo para agregar un producto
             public boolean agregarProducto(Producto nuevoProducto){
                 if (totalProductos >= 50){
                     System.out.println("Inventario lleno");
                     return false;
                 }
-                 //verificacion de duplicado 
+                 //verificacion de duplicado (recorrido)
                 int i = 0;
                 while (i < totalProductos) {
                     Producto productoActual = listaProductos[i];
@@ -61,15 +75,15 @@ class Inventario{
                             }
                         }
                     }
-                    i = i++;
+                    i++;
                 }
-            
             listaProductos[totalProductos] = nuevoProducto;
             totalProductos++;
             System.out.println("Producto agregado");
             return true;
             }
             
+            //metodo para buscar un producto
             public void buscarProducto(String criterioBusqueda){ //
                 boolean encontrado = false;
                 int i = 0;
@@ -95,12 +109,14 @@ class Inventario{
                     }
                 }
             }
-            i = i++;
+            i++;
         }
         if (encontrado == false) {
             System.out.println("No se encontro nada");
                 }
             }
+            
+            //metodo para eliminar un producto
             public boolean eliminarProducto(String codigoEliminar){
                 int indiceEliminar = -1;
                 int i = 0;
@@ -114,12 +130,13 @@ class Inventario{
                             }
                         }
                     }
-                    i = i++;
+                    i++;
                 }
                 if (indiceEliminar == -1){
                     System.out.println("No existe ese codigo");
                     return false;
                 }
+                //mover los productos para no dejar espacios
                 int j = indiceEliminar;
                 while (j < totalProductos -1){
                     listaProductos[j] = listaProductos[j + 1];
@@ -130,6 +147,8 @@ class Inventario{
                 System.out.println("Eliminado");
                 return true;
             }
+            
+            //aqui se muestran todos los productos
             public void mostrarInventario(){
                 if(totalProductos == 0){
                     System.out.println("Inventario vacio");
@@ -140,11 +159,12 @@ class Inventario{
                             if (listaProductos[i] != null){
                                 listaProductos[i].mostrarProducto();
                             }
-                            i = i++;
+                            i++;
                         }
                     }
                 }
             
+            //obtener un producto para usarlo en las ventas
              public Producto obtenerProducto(String codigoBuscar){
                  int i = 0;
                  while (i < totalProductos){
@@ -156,13 +176,16 @@ class Inventario{
                              }
                          }
                      }
-                     i = i++;
+                     i++;
                  }
                  return null;
              }
 }
+//--------------------------------------------------------------------------------------------------------
+
 //CLASE VENTA
 class Venta{
+    //metodo estatico para registrar una venta
     public static void registrarVenta(Inventario inventario, String codigoVenta,int cantidadVenta, String usuario){
         Producto productoVendido = inventario.obtenerProducto(codigoVenta);
         if (productoVendido == null){
@@ -170,6 +193,7 @@ class Venta{
             Bitacora.registrarAccion("Registrar venta", "Fallida", usuario);
             return;
         } else {
+            //restar al stock
             if (productoVendido.cantidadProducto < cantidadVenta){
                 System.out.println("No hay suficiente stock");
                 Bitacora.registrarAccion("Registrar venta", "Fallida", usuario);
@@ -182,6 +206,7 @@ class Venta{
                 DateTimeFormatter formatoFecha = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
                 String fechaTexto = fechaHora.format(formatoFecha); 
                 
+                //aqui se guarda en el archivo
                 try {
                     FileWritter archivoVentas = new FileWritter("ventas.txt", true);
                     archivoVentas.write("Producto: " + productoVendido.nombreProducto + " | Codigo: " + productoVendido.codigoProducto +
@@ -198,47 +223,44 @@ class Venta{
         }
     }
 }
+//----------------------------------------------------------------------------------
+
 //CLASE BITACORA
 class Bitacora{
-    public static void registrarAccion(String accion, String resultado, String usuario){
-        try{
+    //registrar una accion en un archivo txt
+    public static void registrarAccion(String accion, String resultado, String usuario) {
+        try {
             LocalDateTime fechaHora = LocalDateTime.now();
-            DateTimeFormatter formatoFecha = DateTimeFormatter.ofPattern("dd_MM_YYYY_HH_mm_ss");
-            String nombreArchivo = formato.format(fechaHora) + "_Venta.pdf";
-            
-            Document doc = new Document();
-            try{
-                PdfWriter.get.Instance(doc, new FileOutputStrea,(nombreArchivo));
-                doc.open();
-                doc.add(new Paragraph("Reporte de ventas\n\n"));
-                
-                try {
-                    scanner lector = new Scanner(new File("ventas.txt"));
-                    while (lector.hasNextLine()){
-                        String linea = lector.nextLine();
-                        doc.add(new Paragraph(linea));
-                    }
-                    lector.close();
-                }
-                catch (Exception e){
-                    doc.add(new Paragraph("No hay ventas registradas"));
-                }
-                System.out.println("PDF de ventas creado" + nombreArchivo);
-                Bitacora.registrarAccion("Generar reporte de ventas", "Correcta", usuario);
+            DateTimeFormatter formatoFecha = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+            String fechaTexto = fechaHora.format(formatoFecha);
+            FileWriter archivo = new FileWriter("bitacora.txt", true);
+            archivo.write("Usuario: " + usuario + " | Accion: " + accion + " | Resultado: " + resultado + " | Fecha: " + fechaTexto + "\n");
+            archivo.close();
+        } catch (Exception e) {
+            System.out.println("No se pudo escribir en bitacora");
+        }
+    }
+
+    // mostrar lo que hay en la bitacora
+    public static void mostrarBitacora() {
+        try {
+            Scanner lector = new Scanner(new File("bitacora.txt"));
+            System.out.println("===== BITACORA =====");
+            while (lector.hasNextLine()) {
+                String linea = lector.nextLine();
+                System.out.println(linea);
             }
-            catch (Exception e){
-                System.out.println("No se pudo generar el PDf de ventas");
-                Bitacora.registrarAccion("Generar reporde de ventas", "Error", usuario);
-            }
-            finally{
-                doc.close();
-            }
+            lector.close();
+        } catch (Exception e) {
+            System.out.println("No hay bitacora o no se pudo leer");
         }
     }
 }
+//----------------------------------------------------------------------------------
 
 //CLASE REPORTE DE PDF
 class ReportePDF{
+    //generar el reporte en pdf del stock
      public static void generarReporteStock(Inventario inventario, String usuario) {
         LocalDateTime fechaHora = LocalDateTime.now();
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd_MM_yyyy_HH_mm_ss");
@@ -254,7 +276,8 @@ class ReportePDF{
             tabla.addCell("Categoria");
             tabla.addCell("Precio");
             tabla.addCell("Cantidad");
-
+            
+            //aqui recorro todos los productos para ponerlos en la tabla
             int i = 0;
             while (i < inventario.totalProductos) {
                 Producto p = inventario.listaProductos[i];
@@ -265,7 +288,7 @@ class ReportePDF{
                     tabla.addCell("Q" + p.precioProducto);
                     tabla.addCell(String.valueOf(p.cantidadProducto));
                 }
-                i = i + 1;
+                i++;
             }
 
             doc.add(tabla);
@@ -280,7 +303,8 @@ class ReportePDF{
             } catch (Exception e) {}
         }
     }
-
+     
+     //generara el reporte de ventas 
     public static void generarReporteVentas(String usuario) {
         LocalDateTime fechaHora = LocalDateTime.now();
         DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd_MM_yyyy_HH_mm_ss");
@@ -311,16 +335,25 @@ class ReportePDF{
             } catch (Exception e) {}
         }
     }
-}          
+}      
+//------------------------------------------------------------------------------------------------
+
 //CLASE ESTUDIANTE
 class Estudiante{
     String nombreEstudiante;
-    int carnet;
+    String carnet;
     
-    public Estudiante(String nombre, int carnet){
-        nombreEstudiante = nombre;
-        carnet = carnet;
+    // constructor vacio (para que funcione Estudiante e = new Estudiante(); )
+    public Estudiante(){
+        
     }
+    //constructor ahora si con parametros
+    public Estudiante(String nombre, String carnet){
+        nombreEstudiante = nombre;
+        this.carnet = carnet;
+    }
+    
+    //mostrar los datos
     public void mostrarDatos(){
         System.out.println("--Datos del estudiante--");
         System.out.println("NOmbre: " + nombreEstudiante);
@@ -328,32 +361,10 @@ class Estudiante{
         System.out.println("Sección F");
     }
 }
+//-------------------------------------------------------------------
 
 
-class Menu{
-    do{
-        System.out.println("--Menú--");
-        System.out.println("1. Agregar nuevo producto")
-        System.out.println("2. Ver inventario")
-        System.out.println("3. Eliminar producto")
-        switch(opcion){
-            case 1:
-                System.out.println("funciona?");
-                break;
-            case 2:
-                System.out.println("a lo mejor y si");
-                break;
-            case 3:
-                System.out.println("ojala que si");
-                break;
-        }
-                
-    }
-    while{
-        opcion (!= 9);
-    }
-}
-
+//clase (main) principal
 public class InventarioTIenda {
 
     /**
@@ -363,10 +374,22 @@ public class InventarioTIenda {
         // TODO code application logic here
         Scanner scanner = new Scanner(System.in);
         Inventario inventario = new Inventario();
-        Estudiante estudiante = new Estudiante();
+        String nombreUsuario;   
+        Estudiante estudiante;
         
         System.out.println("Ingrese su usuario: ");
-        String nombreUsuario = scanner.nextLine();
+        nombreUsuario = scanner.nextLine();
+        
+        //pedir los datos del estudiante
+        System.out.println("Ingrese su nombre: ");
+        String nombreEstudiante = scanner.nextLine();
+        
+        System.out.println("Ingrese su carnet: ");
+        String carnet = scanner.nextLine();
+        
+        //crear objeto estudiante con los datos ingresados
+        estudiante = new Estudiante(nombreEstudiante, carnet);
+        
         
         //Productos ya cargados
         Producto blusaMorada = new Producto("Blusa", "Ropa de mujer", 150.00, 10, "C001");
@@ -378,11 +401,11 @@ public class InventarioTIenda {
         inventario.agregarProducto(pantalonNegro);
         inventario.agregarProducto(chaquetaCuero);
         inventario.agregarProducto(vestidoFlores);
-        
+        //--------------------------------------------
         //comienza el menu
         int opcion = 0;
         do{
-            System.out.println("--Menú--");
+            System.out.println("--Menu--");
             System.out.println("1. Agregar producto");
             System.out.println("2. Buscar producto");
             System.out.println("3. Eliminar producto");
@@ -393,15 +416,15 @@ public class InventarioTIenda {
             System.out.println("8. Mostrar bitacora");
             System.out.println("9. Ver datos estudiante");
             System.out.println("10. Salir");
-            System.out.println("Opcion: ");
+            System.out.println("Seleccione una opcion: ");
             
             try {
-                opcion = Integrer.parseInt(scanner.nextLine());
+                opcion = Integer.parseInt(scanner.nextLine());
             } catch (Exception e){
                 System.out.println("Opcion invalida");
                 opcion = 0;
             }
-            while (opcion){
+            switch (opcion){
                 case 1:
                 System.out.println("Nombre: ");
                 String nombre = scanner.nextLine();
@@ -438,14 +461,14 @@ public class InventarioTIenda {
                 case 2:
                 System.out.println("Criterio de busqueda; ");
                 String criterioBusqueda = scanner.nextLine();
-                Inventario.buscarProducto(criterioBusqueda);
+                inventario.buscarProducto(criterioBusqueda);
                 Bitacora.registrarAccion("Buscar producto", "Correcta", nombreUsuario);
                 break;
                 
                 case 3:
                 System.out.println("Codigo a eliminar: ");
                 String codigoEliminar = scanner.nextLine();
-                boolean eliminado = inventario.elimincarProducto(codigoEliminar);
+                boolean eliminado = inventario.eliminarProducto(codigoEliminar);
                 if (eliminado == true){
                     Bitacora.registrarAccion("Eliminar producto", "Correcta", nombreUsuario);
                 } else{
@@ -472,12 +495,28 @@ public class InventarioTIenda {
                     break;
                     
                 case 6:
+                    ReportePDF.generarReporteStock(inventario, nombreUsuario);
+                    break;
+                    
                 case 7:
+                    ReportePDF.generarReporteVentas(nombreUsuario);
+                    break;
+                    
                 case 8:
+                    Bitacora.mostrarBitacora();
+                    break;
+                    
                 case 9:
+                    estudiante.mostrarDatos();
+                    Bitacora.registrarAccion("Ver datos del estudiante", "Correcta", nombreUsuario);
+                    break;
+                    
                 case 10:
+                    System.out.println("Adios");
+                    break;
             }
-        }
+        } while (opcion != 10);
+        scanner.close();
     }
     
 }
