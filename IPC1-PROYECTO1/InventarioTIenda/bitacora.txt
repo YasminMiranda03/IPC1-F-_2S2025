@@ -3,3 +3,6 @@ Usuario: 202300537 | Accion: Ver datos del estudiante | Resultado: Correcta | Fe
 Usuario: 2 | Accion: Ver datos del estudiante | Resultado: Correcta | Fecha: 10/09/2025 23:21:07
 Usuario: Yasmin | Accion: Ver datos del estudiante | Resultado: Correcta | Fecha: 10/09/2025 23:29:37
 Usuario: Yasmin | Accion: Buscar producto | Resultado: Correcta | Fecha: 10/09/2025 23:30:03
+Usuario: yasmin | Accion: Agregar producto | Resultado: Correcta | Fecha: 12/09/2025 11:14:00
+Usuario: YASMIN | Accion: Generar reporte stock | Resultado: Correcta | Fecha: 12/09/2025 11:47:26
+Usuario: YASMIN | Accion: Generar reporte ventas | Resultado: Correcta | Fecha: 12/09/2025 11:50:58

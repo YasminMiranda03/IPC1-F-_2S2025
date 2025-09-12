@@ -208,7 +208,7 @@ class Venta{
                 
                 //aqui se guarda en el archivo
                 try {
-                    FileWritter archivoVentas = new FileWritter("ventas.txt", true);
+                    FileWriter archivoVentas = new FileWriter("ventas.txt", true);
                     archivoVentas.write("Producto: " + productoVendido.nombreProducto + " | Codigo: " + productoVendido.codigoProducto +
                                         " | Cantidad: " + cantidadVenta + " | Total: Q" + totalVenta +
                                         " | Fecha: " + fechaTexto + "\n");
