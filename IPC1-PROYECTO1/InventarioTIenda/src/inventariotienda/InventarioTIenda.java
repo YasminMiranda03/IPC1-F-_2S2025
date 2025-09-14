@@ -44,7 +44,7 @@ class Producto {
     public void mostrarProducto(){
         System.out.println("Nombre:" + nombreProducto); //imprime los datos en pantalla
         System.out.println("Categoria:" + categoriaProducto);
-        System.out.println("Código:" + codigoProducto);
+        System.out.println("Codigo:" + codigoProducto);
         System.out.println("Cantidad:" + cantidadProducto);
         System.out.println("Precio en Q:" + precioProducto);
     }
@@ -144,7 +144,7 @@ class Inventario{
                 }
                 listaProductos[totalProductos -1] = null;   //deja en null la ultima posicion porque quedo duplicada porque se desplazo 
                 totalProductos = totalProductos -1; //decrementa el contador total de productos porque se elimino uno 
-                System.out.println("Eliminado");
+                System.out.println("Producto Eliminado");
                 return true;
             }
             
@@ -448,9 +448,9 @@ public class InventarioTIenda {
                 System.out.println("Cantidad: ");
                 int cantidad = 0;
                     try{
-                        precio = Double.parseDouble(scanner.nextLine());
+                        cantidad = Integer.parseInt(scanner.nextLine());
                     } catch (Exception e){
-                        precio = 0;
+                        cantidad = 0;
                     }
                     System.out.println("Código: ");
                     String codigo = scanner.nextLine();
