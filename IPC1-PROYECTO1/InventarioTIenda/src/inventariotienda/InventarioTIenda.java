@@ -8,11 +8,11 @@ package inventariotienda;
  *
  * @author APROJUSA
  */
-import java.util.Scanner;
-import java.io.FileWriter;
-import java.io.File;
+import java.util.Scanner;   //para leer los datos que se ingresn en el teclado
+import java.io.FileWriter;  //clase para escribir en archivos
+import java.io.File;    //clase para representar archivos en el sistema
 import java.io.FileOutputStream;
-import java.time.LocalDateTime;
+import java.time.LocalDateTime; //para la fecha y hora
 import java.time.format.DateTimeFormatter;
 
 //libreria para el pdf
@@ -33,8 +33,8 @@ class Producto {
     
     //constructor con datos
     public Producto(String nombre, String categoria, double precio, int cantidad, String codigo){
-        nombreProducto = nombre;
-        categoriaProducto = categoria;
+        nombreProducto = nombre;    //asigna el nombre recibido
+        categoriaProducto = categoria;  //adina la categoria recibida
         precioProducto = precio;
         cantidadProducto = cantidad;
         codigoProducto = codigo;
@@ -42,7 +42,7 @@ class Producto {
     
     //metodo para mostrar los datos de un producto
     public void mostrarProducto(){
-        System.out.println("Nombre:" + nombreProducto);
+        System.out.println("Nombre:" + nombreProducto); //imprime los datos en pantalla
         System.out.println("Categoria:" + categoriaProducto);
         System.out.println("Código:" + codigoProducto);
         System.out.println("Cantidad:" + cantidadProducto);
@@ -54,16 +54,16 @@ class Producto {
 //CLASE INVENTARIO
 class Inventario{
     //aqui guardo los productos
-    public Producto[] listaProductos = new Producto[50];
-    public int totalProductos = 0;
+    public Producto[] listaProductos = new Producto[50];    //arreglo de 50 espacios
+    public int totalProductos = 0;  //contador que indica cuantos productos se han registrado
     
     //metodo para agregar un producto
             public boolean agregarProducto(Producto nuevoProducto){
-                if (totalProductos >= 50){
+                if (totalProductos >= 50){      //verifica si el inventario ya esta lleno
                     System.out.println("Inventario lleno");
                     return false;
                 }
-                 //verificacion de duplicado (recorrido)
+                 //verificacion de duplicado para ver si el codigo no se repite(recorrido)
                 int i = 0;
                 while (i < totalProductos) {
                     Producto productoActual = listaProductos[i];
@@ -77,13 +77,13 @@ class Inventario{
                     }
                     i++;
                 }
-            listaProductos[totalProductos] = nuevoProducto;
-            totalProductos++;
+            listaProductos[totalProductos] = nuevoProducto; //si no esta repetido entonces se agrega
+            totalProductos++;   // se incrementa el contador para reflejar el nuevo total de productos
             System.out.println("Producto agregado");
-            return true;
+            return true;    // retorno true para indicar que la inserción fue exitosa
             }
             
-            //metodo para buscar un producto
+            //metodo para buscar un producto por codigo nombre o categoria
             public void buscarProducto(String criterioBusqueda){ //
                 boolean encontrado = false;
                 int i = 0;
@@ -116,7 +116,7 @@ class Inventario{
                 }
             }
             
-            //metodo para eliminar un producto
+            //metodo para eliminar un producto por codigo
             public boolean eliminarProducto(String codigoEliminar){
                 int indiceEliminar = -1;
                 int i = 0;
@@ -140,45 +140,45 @@ class Inventario{
                 int j = indiceEliminar;
                 while (j < totalProductos -1){
                     listaProductos[j] = listaProductos[j + 1];
-                    j = j++;
+                    j++;
                 }
-                listaProductos[totalProductos -1] = null;
-                totalProductos = totalProductos -1;
+                listaProductos[totalProductos -1] = null;   //deja en null la ultima posicion porque quedo duplicada porque se desplazo 
+                totalProductos = totalProductos -1; //decrementa el contador total de productos porque se elimino uno 
                 System.out.println("Eliminado");
                 return true;
             }
             
             //aqui se muestran todos los productos
-            public void mostrarInventario(){
+            public void mostrarInventario(){    //metodo que imprime todos los productos registrados
                 if(totalProductos == 0){
                     System.out.println("Inventario vacio");
                 } else{
-                    int i = 0;
+                    int i = 0;  //indice de recorrido inicializado en 0
                     System.out.println("--Inventario--");
-                        while ( i < totalProductos){
+                        while ( i < totalProductos){    //recorre todas las posiciones ocupadas
                             if (listaProductos[i] != null){
-                                listaProductos[i].mostrarProducto();
+                                listaProductos[i].mostrarProducto();    // llamar al método mostrarProducto() del objeto para imprimir sus datos
                             }
-                            i++;
+                            i++;    //incrementa el indice para avanzar al siguiente producto
                         }
                     }
                 }
             
             //obtener un producto para usarlo en las ventas
              public Producto obtenerProducto(String codigoBuscar){
-                 int i = 0;
-                 while (i < totalProductos){
-                     Producto productoActual = listaProductos[i];
-                     if (productoActual != null){
-                         if (productoActual.codigoProducto != null){
-                             if (productoActual.codigoProducto.equalsIgnoreCase(codigoBuscar)){
-                                 return productoActual;
+                 int i = 0; //indice inicial para el recorrido
+                 while (i < totalProductos){    //recorre todas las posiciones
+                     Producto productoActual = listaProductos[i];   //obtiene el producto en la posicion i
+                     if (productoActual != null){   //comprueba que no sea null antes de acceder 
+                         if (productoActual.codigoProducto != null){    //comprueba que el codigo no sea null
+                             if (productoActual.codigoProducto.equalsIgnoreCase(codigoBuscar)){ //compara codigos sin distinguir entre mayusculas y minusculas
+                                 return productoActual; //si coincide devuelve la referencia al producto encontrado
                              }
                          }
                      }
-                     i++;
+                     i++;   //avanza al siguiente indice
                  }
-                 return null;
+                 return null;   //si no se encuentra
              }
 }
 //--------------------------------------------------------------------------------------------------------
@@ -193,15 +193,17 @@ class Venta{
             Bitacora.registrarAccion("Registrar venta", "Fallida", usuario);
             return;
         } else {
-            //restar al stock
+            //aqui se comienza a verificar el stock
             if (productoVendido.cantidadProducto < cantidadVenta){
                 System.out.println("No hay suficiente stock");
                 Bitacora.registrarAccion("Registrar venta", "Fallida", usuario);
                 return;
             }else {
-               productoVendido.cantidadProducto = productoVendido.cantidadProducto - cantidadVenta;
+                //restar al stock
+                productoVendido.cantidadProducto = productoVendido.cantidadProducto - cantidadVenta;
                 double totalVenta = productoVendido.precioProducto * cantidadVenta;
-
+                
+                //aqui se obtiene la fecha y hora
                 LocalDateTime fechaHora = LocalDateTime.now();
                 DateTimeFormatter formatoFecha = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
                 String fechaTexto = fechaHora.format(formatoFecha); 
@@ -227,7 +229,7 @@ class Venta{
 
 //CLASE BITACORA
 class Bitacora{
-    //registrar una accion en un archivo txt
+    //registrar una accion en un archivo
     public static void registrarAccion(String accion, String resultado, String usuario) {
         try {
             LocalDateTime fechaHora = LocalDateTime.now();
@@ -270,6 +272,8 @@ class ReportePDF{
             PdfWriter.getInstance(doc, new FileOutputStream(new File(nombreArchivo)));
             doc.open();
             doc.add(new Paragraph("Reporte de Stock\n\n"));
+            
+            //aqui se crea la tabla con 5 columnas
             PdfPTable tabla = new PdfPTable(5);
             tabla.addCell("Codigo");
             tabla.addCell("Nombre");
@@ -372,7 +376,7 @@ public class InventarioTIenda {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = new Scanner(System.in);   //objeto scanner para leer los datos que se ingresan en el teclado
         Inventario inventario = new Inventario();
         String nombreUsuario;   
         Estudiante estudiante;
@@ -424,6 +428,8 @@ public class InventarioTIenda {
                 System.out.println("Opcion invalida");
                 opcion = 0;
             }
+            
+            //se comienzan a ejecutar las opciones que se elijan
             switch (opcion){
                 case 1:
                 System.out.println("Nombre: ");
