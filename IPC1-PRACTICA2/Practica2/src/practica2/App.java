@@ -8,11 +8,8 @@ package practica2;
  *
  * @author APROJUSA
  */
-class personaje{
-String nombre;
-}
 
-public class Practica2 {
+public class App {
 
     /**
      * @param args the command line arguments
