@@ -6,7 +6,10 @@ package practica2;
 
 import arenausac.controlador.ArenaUSAC;
 import arenausac.controlador.Batalla;
+import arenausac.controlador.Historial;
+import arenausac.controlador.RegistroBatalla;
 import arenausac.modelo.Personaje;
+import arenausac.modelo.Estudiante;
 import java.util.Scanner;
 
 /**
@@ -21,9 +24,19 @@ public class App {
      */
     public static void main(String[] args) {
         // TODO code application logic here
+        Scanner sc = new Scanner(System.in);
+        
+        
         System.out.println("Bienvenido a ArenaUSAC");
         
-        Scanner sc = new Scanner(System.in);
+        System.out.println("Ingrese los datos del estudiante: ");
+        System.out.println("Nombre: ");
+        String nombreEst = sc.nextLine();
+        System.out.println("Carnet: ");
+        String carneEst = sc.nextLine();
+        
+        Estudiante estudiante = new Estudiante(nombreEst, carneEst);
+        
         ArenaUSAC arena = new ArenaUSAC(10);
         Historial historial = new Historial(20);
         
@@ -41,6 +54,7 @@ public class App {
             System.out.println("8. Guardar personajes en archivo");
             System.out.println("9. Cargar personajes desde archivo");
             System.out.println("10. Guardar historial en archivo");
+            System.out.println("11. Mostrar datos del estudiante");
             System.out.println("0. Salir");
             System.out.print("Elige una opcion: ");
             opcion = sc.nextInt();
@@ -145,6 +159,10 @@ public class App {
         
                 case 10:
                     historial.guardarHistorial("historial.txt");
+                    break;
+                    
+                case 11:
+                    System.out.println(estudiante.toString());
                     break;
                     
                 case 0:

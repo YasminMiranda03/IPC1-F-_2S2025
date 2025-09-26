@@ -9,7 +9,7 @@ import java.util.Scanner;
 
 /**
  *
- * @author APROJUSA
+ * @author Katherin Yasmin
  */
 public class Historial {
     private RegistroBatalla[] registros;
