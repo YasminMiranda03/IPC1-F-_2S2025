@@ -74,12 +74,16 @@ public class Personaje {
     public int getVelocidad() { return velocidad; }
     public int getAgilidad() { return agilidad; }
     public int getDefensa() { return defensa; }
+    
+    public void setHp(int hp){
+        this.hp = hp;
+    }
 
     @Override
     public String toString() {
         return "ID: " + id + " | " + nombre + " (" + arma + ") "
-             + "HP:" + hp + " Atk:" + ataque
-             + " Vel:" + velocidad + " Agi:" + agilidad + " Def:" + defensa;
+             + "HP: " + hp + " Ataque: " + ataque
+             + " Velocidad: " + velocidad + " Agilidad: " + agilidad + " Def:" + defensa;
     }
     
 }
