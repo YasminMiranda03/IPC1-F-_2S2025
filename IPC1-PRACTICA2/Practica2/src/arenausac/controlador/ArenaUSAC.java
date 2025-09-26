@@ -3,7 +3,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package arenausac.controlador;
+
 import arenausac.modelo.Personaje;
+import java.io.*;
 
 /**
  *
@@ -93,5 +95,54 @@ public class ArenaUSAC {
             }
         }
         return null;
+    }
+    
+    public void guardarPersonajes(String nombreArchivo) {
+    try {
+        PrintWriter pw = new PrintWriter(new FileWriter(nombreArchivo));
+        for (int i = 0; i < cantidad; i++) {
+            Personaje p = personajes[i];
+            // Guardamos los atributos separados por coma
+            pw.println(p.getId() + "," + p.getNombre() + "," + p.getArma() + "," +
+                       p.getHp() + "," + p.getAtaque() + "," + p.getVelocidad() + "," +
+                       p.getAgilidad() + "," + p.getDefensa());
+        }
+        pw.close();
+        System.out.println("Personajes guardados en " + nombreArchivo);
+    } catch (IOException e) {
+        System.out.println("Error al guardar personajes: " + e.getMessage());
+    }
+}
+
+    public void cargarPersonajes(String nombreArchivo) {
+        try {
+            File archivo = new File(nombreArchivo);
+            if (!archivo.exists()) {
+                System.out.println("No hay archivo de personajes para cargar.");
+                return;
+            }
+            Scanner lector = new Scanner(archivo);
+            cantidad = 0; // reiniciar
+            while (lector.hasNextLine()) {
+                String linea = lector.nextLine();
+                String[] datos = linea.split(",");
+                // [0]=id , [1]=nombre , [2]=arma , [3]=hp , [4]=ataque , [5]=velocidad , [6]=agilidad , [7]=defensa
+                String nombre = datos[1];
+                String arma = datos[2];
+                int hp = Integer.parseInt(datos[3]);
+                int ataque = Integer.parseInt(datos[4]);
+                int velocidad = Integer.parseInt(datos[5]);
+                int agilidad = Integer.parseInt(datos[6]);
+                int defensa = Integer.parseInt(datos[7]);
+
+                Personaje p = new Personaje(nombre, arma, hp, ataque, velocidad, agilidad, defensa);
+                personajes[cantidad] = p;
+                cantidad++;
+            }
+            lector.close();
+            System.out.println("Personajes cargados desde " + nombreArchivo);
+        } catch (Exception e) {
+            System.out.println("Error al cargar personajes: " + e.getMessage());
+        }
     }
 }

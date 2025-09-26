@@ -38,6 +38,9 @@ public class App {
             System.out.println("5. Modificar personaje");
             System.out.println("6. Iniciar batalla");
             System.out.println("7. Mostrar historial de batallas");
+            System.out.println("8. Guardar personajes en archivo");
+            System.out.println("9. Cargar personajes desde archivo");
+            System.out.println("10. Guardar historial en archivo");
             System.out.println("0. Salir");
             System.out.print("Elige una opcion: ");
             opcion = sc.nextInt();
@@ -130,6 +133,18 @@ public class App {
                     
                 case 7:
                     historial.mostrarHistorial();
+                    break;
+                    
+                case 8:
+                    arena.guardarPersonajes("personajes.txt");
+                    break;
+                    
+                case 9:
+                    arena.cargarPersonajes("personajes.txt");
+                    break;
+        
+                case 10:
+                    historial.guardarHistorial("historial.txt");
                     break;
                     
                 case 0:

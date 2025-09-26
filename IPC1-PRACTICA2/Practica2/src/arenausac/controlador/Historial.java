@@ -4,6 +4,9 @@
  */
 package arenausac.controlador;
 
+import java.io.*;
+import java.util.Scanner;
+
 /**
  *
  * @author APROJUSA
@@ -34,6 +37,21 @@ public class Historial {
             for (int i = 0; i < cantidad; i++){
                 System.out.println(registros[i]);
             }
+        }
+    }
+    
+    public void guardarHistorial(String nombreArchivo) {
+        try {
+            PrintWriter pw = new PrintWriter(new FileWriter(nombreArchivo));
+            for (int i = 0; i < cantidad; i++) {
+                RegistroBatalla r = registros[i];
+                // Guardamos cada campo separado por coma
+                pw.println(r.toString());
+            }
+            pw.close();
+            System.out.println("Historial guardado en " + nombreArchivo);
+        } catch (IOException e) {
+            System.out.println("Error al guardar historial: " + e.getMessage());
         }
     }
 }
