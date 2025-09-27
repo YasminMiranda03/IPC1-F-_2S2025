@@ -17,11 +17,13 @@ public class Batalla {
     private Personaje p1;
     private Personaje p2;
     private boolean enCurso;
+    private Historial historial;
     
-    public Batalla(Personaje p1, Personaje p2){
+    public Batalla(Personaje p1, Personaje p2, Historial historial){
         this.p1 = p1;
         this.p2 = p2;
         this.enCurso = true;
+        this.historial = historial;
     }
     
    public void iniciar() {

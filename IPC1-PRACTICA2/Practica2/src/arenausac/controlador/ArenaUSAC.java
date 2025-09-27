@@ -38,15 +38,7 @@ public class ArenaUSAC {
         System.out.println("Personaje agregado: " + p.getNombre());
     }
     
-    public void listarPersonajes(){
-        if (cantidad == 0){
-            System.out.println("No hay personajes registrados");
-        } else {
-            for (int i = 0; i < cantidad; i++){
-                System.out.println(personajes[i]);
-            }
-        }
-    }
+    
     
     public void eliminarPersonaje(int id){
         boolean encontrado = false;
@@ -95,6 +87,14 @@ public class ArenaUSAC {
             }
         }
         return null;
+    }
+    
+    public Personaje[] getListaPersonajes() {
+        Personaje[] lista = new Personaje[cantidad];
+        for (int i = 0; i < cantidad; i++) {
+            lista[i] = personajes[i];
+        }
+        return lista;
     }
     
     public void guardarPersonajes(String nombreArchivo) {
