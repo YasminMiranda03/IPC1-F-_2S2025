@@ -21,7 +21,7 @@ public class Estudiante {
 
     @Override
     public String toString() {
-        return "===== DATOS DEL ESTUDIANTE =====\n" +
+        return "DATOS DEL ESTUDIANTE" +
                "Nombre: " + nombre + "\n" +
                "Carne: " + carne + "\n";
     }

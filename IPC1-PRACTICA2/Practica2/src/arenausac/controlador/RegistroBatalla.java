@@ -8,20 +8,22 @@ package arenausac.controlador;
  *
  * @author Katherin Yasmin
  */
+import arenausac.modelo.Personaje;
+
 public class RegistroBatalla {
-    private String personaje1;
-    private String personaje2;
-    private String ganador;
-    private String fecha;
-    
-    public RegistroBatalla(String personaje1, String personaje2, String ganador, String fecha){
-        this.personaje1 = personaje1;
-        this.personaje2 = personaje2;
+    private Personaje p1;
+    private Personaje p2;
+    private Personaje ganador;
+
+    public RegistroBatalla(Personaje p1, Personaje p2, Personaje ganador) {
+        this.p1 = p1;
+        this.p2 = p2;
         this.ganador = ganador;
-        this.fecha = fecha;
     }
+
     @Override
-    public String toString(){
-        return fecha + "   " + personaje1 + " vs " + personaje2 + "Ganador: " + ganador;
+    public String toString() {
+        return "Batalla entre " + p1.getNombre() + " y " + p2.getNombre()
+               + "Ganador: " + ganador.getNombre();
     }
 }

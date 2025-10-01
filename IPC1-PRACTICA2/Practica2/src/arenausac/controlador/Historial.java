@@ -4,9 +4,12 @@
  */
 package arenausac.controlador;
 
+
 import java.io.*;
 import java.util.Scanner;
+import javax.swing.JTextArea;
 
+import arenausac.modelo.Personaje;
 /**
  *
  * @author Katherin Yasmin
@@ -29,13 +32,13 @@ public class Historial {
         }
     }
     
-    public void mostrarHistorial(){
+    public void mostrarHistorial(JTextArea areaTexto){
         if (cantidad == 0){
-            System.out.println("No hay batallas registradas");
+            areaTexto.append("No hay batallas registradas");
         } else{
-            System.out.println("--Historial de batalas--");
+            areaTexto.append("Historial de batallas: \n");
             for (int i = 0; i < cantidad; i++){
-                System.out.println(registros[i]);
+                areaTexto.append(registros[i].toString() + "\n");
             }
         }
     }
@@ -53,5 +56,11 @@ public class Historial {
         } catch (IOException e) {
             System.out.println("Error al guardar historial: " + e.getMessage());
         }
+    }
+    
+    public void registrarBatalla(Personaje p1, Personaje p2, Personaje ganador) {
+        RegistroBatalla registro = new RegistroBatalla(p1, p2, ganador);
+        agregarRegistro(registro);
+        System.out.println("Batalla registrada en historial: " + registro);
     }
 }
