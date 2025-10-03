@@ -17,10 +17,9 @@ import javax.swing.*;
 public class Batalla {
     private Personaje p1;
     private Personaje p2;
-    private boolean enCurso;
     private Historial historial;
     private JTextArea areaTexto;        //para mostrar los resultados en gui
-    private volatile boolean enBatalla = true;
+    private boolean enCurso;
     
     private JProgressBar barraP1;
     private JProgressBar barraP2;
@@ -37,89 +36,82 @@ public class Batalla {
         this.barraP2 = barraP2; 
         
         //Inicializando las barras con la vida inicial
-        SwingUtilities.invokeLater(() -> {
-           barraP1.setValue(p1.getHp());
-           barraP2.setValue(p2.getHp());
-        });
+        barraP1.setMaximum(p1.getHp());
+        barraP1.setValue(p1.getHp());
+
+        barraP2.setMaximum(p2.getHp());
+        barraP2.setValue(p2.getHp());
     }
     
    public void iniciar() {
-        System.out.println("BATALLA");
-        Thread t1 = new Thread(() -> atacar(p1, p2));
-        Thread t2 = new Thread(() -> atacar(p2, p1));
+        Thread t1 = new Thread(new Runnable(){
+            @Override
+            public void run(){
+                atacar(p1, p2, barraP2);
+            }
+        });
+        Thread t2 = new Thread(new Runnable(){
+            @Override
+            public void run(){
+                atacar(p2,p1, barraP1);
+            }
+        });
 
         t1.start();
         t2.start();
     }
 
-    // Clase interna que representa el comportamiento de un luchador
-    class Luchador implements Runnable {
-        private Personaje atacante;
-        private Personaje defensor;
-
-        public Luchador(Personaje atacante, Personaje defensor) {
-            this.atacante = atacante;
-            this.defensor = defensor;
-        }
-
-        @Override
-        public void run() {
-            while (enCurso && atacante.getHp() > 0 && defensor.getHp() > 0) {
-                atacar(atacante, defensor);
-
-                // la velocidad decide el tiempo entre ataques
-                int tiempo = 1000 / atacante.getVelocidad();
-                try {
-                    Thread.sleep(tiempo);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-    }
+    
 
     // Método para realizar el ataque
-    private void atacar(Personaje atacante, Personaje defensor) {
-        while (enBatalla && atacante.getHp() > 0 && defensor.getHp() > 0) {
+    private void atacar(Personaje atacante, Personaje defensor, JProgressBar barraDefensor) {
+        while (enCurso && atacante.getHp() > 0 && defensor.getHp() > 0) {
             try {
-                // Velocidad: mientras más alta, menos tiempo espera
-                Thread.sleep(1000 / atacante.getVelocidad());
-
-                // ¿El defensor esquiva?
-                if (Math.random() * 10 < defensor.getAgilidad()) {
-                    log(defensor.getNombre() + " esquivó el ataque de " + atacante.getNombre());
-                    continue;
-                }
-
-                // Calcular daño real (ataque - defensa)
-                int daño = atacante.getAtaque() - defensor.getDefensa();
-                if (daño < 0) daño = 0;
-
-                defensor.setHp(defensor.getHp() - daño);
-
-                log(atacante.getNombre() + " atacó a " + defensor.getNombre()
-                        + " causando " + daño + " de daño. Vida restante de "
-                        + defensor.getNombre() + ": " + defensor.getHp());
-
-                // Verificar si el defensor murió
-                if (defensor.getHp() <= 0) {
-                    enBatalla = false;
-                    log(atacante.getNombre() + " ganó la batalla contra " + defensor.getNombre());
-                    historial.registrarBatalla(p1, p2, atacante); // guarda en historial
-                }
-
+                // Espera entre ataques (1 segundo)
+                Thread.sleep(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
+            // Calcular daño simple
+            int dano = (int) (Math.random() * 10 + 1);
+            int nuevaVida = defensor.getHp() - dano;
+
+            if (nuevaVida < 0) {
+                nuevaVida = 0;
+            }
+            defensor.setHp(nuevaVida);
+
+            // Actualizamos la interfaz gráfica
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    barraDefensor.setValue(defensor.getHp());
+                    areaTexto.append(atacante.getNombre() + " ataca a " +
+                            defensor.getNombre() + " y le quita " + dano + " de vida\n");
+                }
+            });
         }
-        
-        if(defensor == p1){
-            SwingUtilities.invokeLater(() -> barraP1.setValue(defensor.getHp()));
-        } else {
-            SwingUtilities.invokeLater(() -> barraP2.setValue(defensor.getHp()));
+
+        // Ver quién ganó
+        if (enCurso) {
+            enCurso = false;
+            Personaje ganador;
+            if (p1.getHp() > 0) {
+                ganador = p1;
+            } else {
+                ganador = p2;
+            }
+
+            // Mostrar mensaje en el área de texto
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    areaTexto.append(ganador.getNombre() + " gana la batalla!\n");
+                }
+            });
+
+            historial.registrarBatalla(p1, p2, ganador);
         }
-}
-    private void log(String mensaje){
-        SwingUtilities.invokeLater(() -> areaTexto.append(mensaje + "\n"));
-    }
+    }    
 }
