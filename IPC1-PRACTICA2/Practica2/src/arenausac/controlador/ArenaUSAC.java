@@ -71,8 +71,9 @@ public class ArenaUSAC {
     public void modificarPersonaje(int id, String arma, int hp, int ataque, int velocidad, int agilidad, int defensa){
         for (int i = 0; i < cantidad; i++){
             if (personajes[i].getId() == id){
-                personajes[i] = new Personaje(personajes[i].getNombre(), arma, int hp, int ataque, int velocidad, int agilidad, int defensa){
-                System.out.println("Personaje con ID " + id + "modificado");
+                personajes[i] = new Personaje(personajes[i].getNombre(),
+                        arma, hp, ataque, velocidad, agilidad, defensa);{
+             
                 return;
                 }
             }
