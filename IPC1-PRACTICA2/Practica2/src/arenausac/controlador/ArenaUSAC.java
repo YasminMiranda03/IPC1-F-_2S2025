@@ -9,10 +9,10 @@ import java.io.*;
 
 /**
  *
- * @author APROJUSA
+ * @author Katherin Yasmin
  */
 public class ArenaUSAC {
-    private Personaje[] personajes;
+    private Personaje[] personajes; //vector
     private int cantidad;
     
     public ArenaUSAC(int maxPersonajes){
@@ -127,7 +127,7 @@ public class ArenaUSAC {
             while (lector.hasNextLine()) {
                 String linea = lector.nextLine();
                 String[] datos = linea.split(",");
-                // [0]=id , [1]=nombre , [2]=arma , [3]=hp , [4]=ataque , [5]=velocidad , [6]=agilidad , [7]=defensa
+                int id = Integer.parseInt(datos[0]);
                 String nombre = datos[1];
                 String arma = datos[2];
                 int hp = Integer.parseInt(datos[3]);
@@ -137,6 +137,8 @@ public class ArenaUSAC {
                 int defensa = Integer.parseInt(datos[7]);
 
                 Personaje p = new Personaje(nombre, arma, hp, ataque, velocidad, agilidad, defensa);
+                p.setId(id);
+                
                 personajes[cantidad] = p;
                 cantidad++;
             }

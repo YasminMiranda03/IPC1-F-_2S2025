@@ -25,6 +25,9 @@ public class VentanaPrincipal extends javax.swing.JFrame {
      */
     public VentanaPrincipal() {
         initComponents();
+
+        //para mostrar el texto del ganador
+        jLabel3.setVisible(false);
         
         //para los datos del estudiantes, se piden antes de iniciar
         String nombreEst = JOptionPane.showInputDialog(this, "Nombre del estudiante:");
@@ -42,6 +45,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private void initComponents() {
 
         jMenuItem1 = new javax.swing.JMenuItem();
+        jProgressBar1 = new javax.swing.JProgressBar();
         btnAgregarPersonaje = new javax.swing.JButton();
         btnListarPersonajes = new javax.swing.JButton();
         btnBuscarPersonaje = new javax.swing.JButton();
@@ -53,13 +57,22 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         btnCargarPersonajes = new javax.swing.JButton();
         btnGuardarHistorial = new javax.swing.JButton();
         btnDatosEstudiante = new javax.swing.JButton();
-        jProgressBar1 = new javax.swing.JProgressBar();
+        barraP1 = new javax.swing.JProgressBar();
+        barraP2 = new javax.swing.JProgressBar();
+        titulo = new javax.swing.JLabel();
+        jLabel1 = new javax.swing.JLabel();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        jLabel4 = new javax.swing.JLabel();
 
         jMenuItem1.setText("jMenuItem1");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setBackground(new java.awt.Color(255, 153, 255));
 
+        btnAgregarPersonaje.setBackground(new java.awt.Color(153, 153, 255));
+        btnAgregarPersonaje.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
+        btnAgregarPersonaje.setForeground(new java.awt.Color(255, 255, 255));
         btnAgregarPersonaje.setText("Agregar Personaje");
         btnAgregarPersonaje.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -67,6 +80,9 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             }
         });
 
+        btnListarPersonajes.setBackground(new java.awt.Color(153, 153, 255));
+        btnListarPersonajes.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
+        btnListarPersonajes.setForeground(new java.awt.Color(255, 255, 255));
         btnListarPersonajes.setText("Listar Personajes");
         btnListarPersonajes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -74,6 +90,9 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             }
         });
 
+        btnBuscarPersonaje.setBackground(new java.awt.Color(153, 153, 255));
+        btnBuscarPersonaje.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
+        btnBuscarPersonaje.setForeground(new java.awt.Color(255, 255, 255));
         btnBuscarPersonaje.setText("Buscar Personaje");
         btnBuscarPersonaje.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -81,7 +100,13 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             }
         });
 
+        btnEliminarPersonaje.setBackground(new java.awt.Color(153, 153, 255));
+        btnEliminarPersonaje.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
+        btnEliminarPersonaje.setForeground(new java.awt.Color(255, 255, 255));
         btnEliminarPersonaje.setText("Eliminar Personaje");
+        btnEliminarPersonaje.setMaximumSize(new java.awt.Dimension(144, 31));
+        btnEliminarPersonaje.setMinimumSize(new java.awt.Dimension(144, 31));
+        btnEliminarPersonaje.setPreferredSize(new java.awt.Dimension(144, 31));
         btnEliminarPersonaje.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnEliminarPersonajeActionPerformed(evt);
@@ -89,7 +114,12 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         });
 
         btnModificarPersonaje.setBackground(new java.awt.Color(153, 153, 255));
+        btnModificarPersonaje.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
+        btnModificarPersonaje.setForeground(new java.awt.Color(255, 255, 255));
         btnModificarPersonaje.setText("Modificar Personaje");
+        btnModificarPersonaje.setMaximumSize(new java.awt.Dimension(144, 31));
+        btnModificarPersonaje.setMinimumSize(new java.awt.Dimension(144, 31));
+        btnModificarPersonaje.setPreferredSize(new java.awt.Dimension(144, 31));
         btnModificarPersonaje.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnModificarPersonajeActionPerformed(evt);
@@ -97,6 +127,7 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         });
 
         btnIniciarBatalla.setBackground(new java.awt.Color(153, 153, 255));
+        btnIniciarBatalla.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
         btnIniciarBatalla.setForeground(new java.awt.Color(255, 255, 255));
         btnIniciarBatalla.setText("Iniciar Batalla");
         btnIniciarBatalla.addActionListener(new java.awt.event.ActionListener() {
@@ -105,6 +136,9 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             }
         });
 
+        btnMostrarHistorial.setBackground(new java.awt.Color(153, 153, 255));
+        btnMostrarHistorial.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
+        btnMostrarHistorial.setForeground(new java.awt.Color(255, 255, 255));
         btnMostrarHistorial.setText("Mostrar Historial");
         btnMostrarHistorial.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -112,6 +146,9 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             }
         });
 
+        btnGuardarPersonajes.setBackground(new java.awt.Color(153, 153, 255));
+        btnGuardarPersonajes.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
+        btnGuardarPersonajes.setForeground(new java.awt.Color(255, 255, 255));
         btnGuardarPersonajes.setText("Guardar Personajes");
         btnGuardarPersonajes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -119,6 +156,9 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             }
         });
 
+        btnCargarPersonajes.setBackground(new java.awt.Color(153, 153, 255));
+        btnCargarPersonajes.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
+        btnCargarPersonajes.setForeground(new java.awt.Color(255, 255, 255));
         btnCargarPersonajes.setText("Cargar Personajes");
         btnCargarPersonajes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -126,6 +166,9 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             }
         });
 
+        btnGuardarHistorial.setBackground(new java.awt.Color(153, 153, 255));
+        btnGuardarHistorial.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
+        btnGuardarHistorial.setForeground(new java.awt.Color(255, 255, 255));
         btnGuardarHistorial.setText("Guardar Historial");
         btnGuardarHistorial.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -134,6 +177,8 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         });
 
         btnDatosEstudiante.setBackground(new java.awt.Color(153, 153, 255));
+        btnDatosEstudiante.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
+        btnDatosEstudiante.setForeground(new java.awt.Color(255, 255, 255));
         btnDatosEstudiante.setText("Datos del estudiante");
         btnDatosEstudiante.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -141,63 +186,127 @@ public class VentanaPrincipal extends javax.swing.JFrame {
             }
         });
 
+        barraP1.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
+        barraP1.setForeground(new java.awt.Color(204, 204, 255));
+        barraP1.setMaximum(500);
+        barraP1.setValue(500);
+        barraP1.setStringPainted(true);
+
+        barraP2.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
+        barraP2.setForeground(new java.awt.Color(204, 204, 255));
+        barraP2.setMaximum(500);
+        barraP2.setValue(500);
+        barraP2.setStringPainted(true);
+
+        titulo.setFont(new java.awt.Font("Segoe UI", 1, 36)); // NOI18N
+        titulo.setForeground(new java.awt.Color(102, 102, 255));
+        titulo.setText("Arena USAC");
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI Black", 3, 18)); // NOI18N
+        jLabel1.setText("Personaje 1");
+
+        jLabel2.setFont(new java.awt.Font("Segoe UI Black", 3, 18)); // NOI18N
+        jLabel2.setText("Personaje 2");
+
+        jLabel3.setBackground(new java.awt.Color(255, 102, 255));
+        jLabel3.setFont(new java.awt.Font("Segoe UI Black", 3, 18)); // NOI18N
+        jLabel3.setText("\"\"");
+
+        jLabel4.setIcon(new javax.swing.ImageIcon(getClass().getResource("/logobien.jpg"))); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(57, 57, 57)
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(titulo)
+                .addGap(244, 244, 244)
+                .addComponent(jLabel2)
+                .addGap(34, 34, 34))
             .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(48, 48, 48)
+                        .addComponent(barraP1, javax.swing.GroupLayout.PREFERRED_SIZE, 440, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(barraP2, javax.swing.GroupLayout.PREFERRED_SIZE, 431, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(33, 33, 33)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addComponent(btnMostrarHistorial, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnAgregarPersonaje, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btnGuardarPersonajes, javax.swing.GroupLayout.DEFAULT_SIZE, 137, Short.MAX_VALUE)
-                            .addComponent(btnListarPersonajes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btnCargarPersonajes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnBuscarPersonaje, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btnEliminarPersonaje, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnGuardarHistorial, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btnModificarPersonaje, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnDatosEstudiante, javax.swing.GroupLayout.DEFAULT_SIZE, 158, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnIniciarBatalla, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(941, 941, 941)
-                        .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 917, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 227, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(22, 22, 22))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(btnMostrarHistorial, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(btnAgregarPersonaje, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(btnGuardarPersonajes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(btnListarPersonajes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(btnCargarPersonajes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(btnBuscarPersonaje, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(btnGuardarHistorial, javax.swing.GroupLayout.DEFAULT_SIZE, 155, Short.MAX_VALUE)
+                                    .addComponent(btnEliminarPersonaje, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                    .addComponent(btnModificarPersonaje, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                    .addComponent(btnDatosEstudiante, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnIniciarBatalla, javax.swing.GroupLayout.PREFERRED_SIZE, 169, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(10, 10, 10)
-                .addComponent(jProgressBar1, javax.swing.GroupLayout.PREFERRED_SIZE, 12, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 264, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnIniciarBatalla, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 132, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(titulo)
+                        .addGap(18, 18, 18))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel1)
+                            .addComponent(jLabel2))
+                        .addGap(7, 7, 7)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(barraP1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(barraP2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 89, Short.MAX_VALUE)
+                        .addComponent(jLabel3)
+                        .addGap(86, 86, 86))
+                    .addGroup(layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btnAgregarPersonaje, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(btnBuscarPersonaje, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addComponent(btnListarPersonajes, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(btnEliminarPersonaje, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addComponent(btnModificarPersonaje, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(btnEliminarPersonaje, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(btnModificarPersonaje, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 65, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(btnGuardarHistorial, javax.swing.GroupLayout.DEFAULT_SIZE, 60, Short.MAX_VALUE)
                             .addComponent(btnCargarPersonajes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(btnGuardarPersonajes, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                             .addComponent(btnMostrarHistorial, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnDatosEstudiante, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(btnDatosEstudiante, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                    .addComponent(btnIniciarBatalla, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(39, 39, 39))
         );
 
@@ -314,10 +423,21 @@ public class VentanaPrincipal extends javax.swing.JFrame {
         Personaje p2 = arena.buscarPorId(id2);
 
         if (p1 != null && p2 != null) {
-            JTextArea textArea = new JTextArea(15,40);
+            actualizarNombresBarras(p1,p2);
+            
             new Thread(() -> {
-                Batalla batalla = new Batalla(p1, p2, historial, new JTextArea(), new JProgressBar(), new JProgressBar());
-                batalla.iniciar();
+                Batalla batalla = new Batalla(p1, p2, historial, new JTextArea(), barraP1, barraP2);
+                Personaje ganador = batalla.iniciar();
+                
+                SwingUtilities.invokeLater(() -> {
+                JOptionPane.showMessageDialog(
+                    this,
+                    "¡El ganador es: " + ganador.getNombre() + "!",
+                    "Resultado de la batalla",
+                    JOptionPane.INFORMATION_MESSAGE
+                );
+            });
+                
             }).start();
             JOptionPane.showMessageDialog(this, "Batalla iniciada");
         } else {
@@ -352,6 +472,8 @@ public class VentanaPrincipal extends javax.swing.JFrame {
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JProgressBar barraP1;
+    private javax.swing.JProgressBar barraP2;
     private javax.swing.JButton btnAgregarPersonaje;
     private javax.swing.JButton btnBuscarPersonaje;
     private javax.swing.JButton btnCargarPersonajes;
@@ -363,8 +485,18 @@ public class VentanaPrincipal extends javax.swing.JFrame {
     private javax.swing.JButton btnListarPersonajes;
     private javax.swing.JButton btnModificarPersonaje;
     private javax.swing.JButton btnMostrarHistorial;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JProgressBar jProgressBar1;
+    private javax.swing.JLabel titulo;
     // End of variables declaration//GEN-END:variables
+
+    public void actualizarNombresBarras(Personaje p1, Personaje p2){
+        jLabel1.setText(p1.getNombre());
+        jLabel2.setText(p2.getNombre());
+    }
 }
 

@@ -66,17 +66,39 @@ public class Personaje {
     }
 
     // Getters
-    public int getId() { return id; }
-    public String getNombre() { return nombre; }
-    public String getArma() { return arma; }
-    public int getHp() { return hp; }
-    public int getAtaque() { return ataque; }
-    public int getVelocidad() { return velocidad; }
-    public int getAgilidad() { return agilidad; }
-    public int getDefensa() { return defensa; }
+    
+    public String getNombre() {
+        return nombre; }
+    
+    public String getArma() { 
+        return arma; 
+    }
+    public int getHp() { 
+        return hp; 
+    }
+    public int getAtaque() { 
+        return ataque;
+    }
+    public int getVelocidad() { 
+        return velocidad;
+    }
+    public int getAgilidad() { 
+        return agilidad;
+    }
+    public int getDefensa() { 
+        return defensa;
+    }
     
     public void setHp(int hp){
         this.hp = hp;
+    }
+    
+    public void setId(int id){
+        this.id =id;
+    }
+    
+    public int getId(){
+        return id;
     }
 
     @Override

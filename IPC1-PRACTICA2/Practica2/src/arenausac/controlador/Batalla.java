@@ -36,29 +36,33 @@ public class Batalla {
         this.barraP2 = barraP2; 
         
         //Inicializando las barras con la vida inicial
-        barraP1.setMaximum(p1.getHp());
+        barraP1.setMaximum(500);
         barraP1.setValue(p1.getHp());
 
-        barraP2.setMaximum(p2.getHp());
+        barraP2.setMaximum(500);
         barraP2.setValue(p2.getHp());
     }
     
-   public void iniciar() {
-        Thread t1 = new Thread(new Runnable(){
-            @Override
-            public void run(){
-                atacar(p1, p2, barraP2);
-            }
-        });
-        Thread t2 = new Thread(new Runnable(){
-            @Override
-            public void run(){
-                atacar(p2,p1, barraP1);
-            }
-        });
+   public Personaje iniciar() {
+        Thread t1 = new Thread(() -> atacar(p1, p2, barraP2));
+        Thread t2 = new Thread(() -> atacar(p2, p1, barraP1));
 
         t1.start();
         t2.start();
+
+        try {
+            t1.join(); // espera a que termine t1
+            t2.join(); // espera a que termine t2
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        // Determinar ganador
+        if (p1.getHp() > 0) {
+            return p1;
+        } else {
+            return p2;
+        }
     }
 
     
@@ -87,6 +91,7 @@ public class Batalla {
                 @Override
                 public void run() {
                     barraDefensor.setValue(defensor.getHp());
+                    barraDefensor.repaint();
                     areaTexto.append(atacante.getNombre() + " ataca a " +
                             defensor.getNombre() + " y le quita " + dano + " de vida\n");
                 }

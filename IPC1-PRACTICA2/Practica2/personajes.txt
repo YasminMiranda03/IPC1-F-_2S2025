@@ -1,2 +1,2 @@
-1,pikachu,sjs,100,10,1,1,1
-2,gengar,ss,100,10,1,1,1
+1,Pikachu,espada,26,100,1,10,50
+4,Gengar,espada,0,10,1,1,1
