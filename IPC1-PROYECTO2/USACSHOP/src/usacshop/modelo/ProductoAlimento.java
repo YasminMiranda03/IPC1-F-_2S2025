@@ -6,8 +6,18 @@ package usacshop.modelo;
 
 /**
  *
- * @author APROJUSA
+ * @author Katherin Yasmin
  */
-public class ProductoAlimento {
+public class ProductoAlimento extends Producto{
+    private String fechaCaducidad;
+    public ProductoAlimento(String codigo, String nombre, String fechaCaducidad){
+        super(codigo, nombre, "Alimento");
+        this.fechaCaducidad = fechaCaducidad;
+    }
     
+    @Override
+    public String getDetalle(){
+        returns "Caduca el;¡: " + fechaCaducidad;
+    }
+            
 }

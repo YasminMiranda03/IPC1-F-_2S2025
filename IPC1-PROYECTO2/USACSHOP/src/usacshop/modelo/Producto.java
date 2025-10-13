@@ -10,17 +10,15 @@ package usacshop.modelo;
  */
 import java.io.Serializable;
 
-public abstract class Usuario implements Serializable {
+public abstract class Producto implements Serializable{
     protected String codigo;
     protected String nombre;
-    protected String genero;
-    protected String contraseña;
+    protected String categoria;
     
-    public Usuario(String codigo, String nombre, String genero, String contraseña){
+    public Producto(String codigo, String nombre, String categoria){
         this.codigo = codigo;
         this.nombre = nombre;
-        this.genero = genero;
-        this.contraseña = contraseña;
+        this.categoria = categoria;
     }
     
     public String getCodigo(){
@@ -29,18 +27,12 @@ public abstract class Usuario implements Serializable {
     public String getNombre(){
         return nombre;
     }
-    public String getGenero(){
-        return genero;
+    public String getCategoria(){
+        return categoria;
     }
-    public String contraseña(){
-        return contraseña;
-    }
-    
     
     public void setNombre(String nombre){
         this.nombre = nombre;
     }
-    public void setContraseña(String contraseña){
-        this.contraseña = contraseña;
-    }
+    public abstract String getDetalle();
 }

@@ -8,6 +8,8 @@ package usacshop.modelo;
  *
  * @author APROJUSA
  */
-public class Administrador {
-    
+public class Administrador  extends Usuario{
+    public Administrador(String codigo, String nombre, String genero, String contraseña){
+        super(codigo, nombre, genero, contraseña);
+    }
 }

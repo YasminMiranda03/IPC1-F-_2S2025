@@ -9,5 +9,8 @@ package usacshop.modelo;
  * @author APROJUSA
  */
 public interface InterfazCRUD {
-    
+    void crear();
+    void actualizar();
+    void eliminar();
+    void listar();
 }

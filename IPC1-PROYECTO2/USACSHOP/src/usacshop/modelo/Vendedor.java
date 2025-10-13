@@ -6,8 +6,20 @@ package usacshop.modelo;
 
 /**
  *
- * @author APROJUSA
+ * @author Katherin Yasmin
  */
-public class Vendedor {
+public class Vendedor extends Usuario{
+    private int ventasConfirmadas = 0;
     
+    public Vendedor(String codigo, String nombre, String genero, String contraseña){
+        super(codigo, nombre, genero, contraseña);
+    }
+    
+    public int getVentasConfirmadas(){
+        return ventasConfirmadas;
+    }
+    
+    public void incrementarVentas(){
+        ventasConfirmadas++;
+    }
 }

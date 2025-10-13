@@ -6,8 +6,18 @@ package usacshop.modelo;
 
 /**
  *
- * @author APROJUSA
+ * @author Katherin Yasmin
  */
-public class ProductoGeneral {
-    
+public class ProductoGeneral extends Producto {
+    private String material;
+
+    public ProductoGeneral(String codigo, String nombre, String material) {
+        super(codigo, nombre, "General");
+        this.material = material;
+    }
+
+    @Override
+    public String getDetalle() {
+        return "Material: " + material;
+    }
 }

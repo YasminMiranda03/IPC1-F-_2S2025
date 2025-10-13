@@ -6,8 +6,17 @@ package usacshop.modelo;
 
 /**
  *
- * @author APROJUSA
+ * @author Katherin Yasmin
  */
-public class Cliente {
+public class Cliente extends Usuario{
+    private String fechaNacimiento;
     
+    public Cliente(String codigo, String nombre, String genero, String contraseña){
+        super(codigo, nombre, genero, contraseña);
+        this.fechaNacimiento = fechaNacimiento;
+    }
+    
+    public String getFechaNacimiento(){
+        return fechaNacimiento;
+    }
 }
