@@ -4,9 +4,14 @@
  */
 package usacshop.vista;
 
+//imports de otras clases para que funcione adminView
+import usacshop.vista.VendedoresView;
+import usacshop.vista.ProductosView;
+
+
 /**
  *
- * @author APROJUSA
+ * @author Katherin Yasmin
  */
 public class AdminView extends javax.swing.JFrame {
     
@@ -100,12 +105,16 @@ public class AdminView extends javax.swing.JFrame {
 
     private void btnVendedoresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVendedoresActionPerformed
         // TODO add your handling code here:
-        javax.swing.JOptionPane.showMessageDialog(this, "Abrir ventana de gestion de vendedores(en construccion)");
+        VendedoresView v = new VendedoresView();
+        v.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_btnVendedoresActionPerformed
 
     private void btnProductosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProductosActionPerformed
         // TODO add your handling code here:
-        javax.swing.JOptionPane.showMessageDialog(this, "Abrir ventana de gestion de productos (en construccion)");
+        ProductosView p = new ProductosView();
+        p.setVisible(true);
+        this.dispose();
     }//GEN-LAST:event_btnProductosActionPerformed
 
     private void btnCerrarSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarSesionActionPerformed
