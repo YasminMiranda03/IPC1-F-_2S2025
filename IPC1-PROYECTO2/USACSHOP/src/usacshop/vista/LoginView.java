@@ -9,6 +9,14 @@ package usacshop.vista;
  * @author Katherin Yasmin
  */
 import usacshop.vista.AdminView;
+import usacshop.vista.VendedorView;
+import usacshop.vista.ClienteView;
+
+
+
+import javax.swing.JOptionPane;
+import java.io.*;
+import javax.swing.*;
 
 public class LoginView extends javax.swing.JFrame {
     
@@ -118,19 +126,49 @@ public class LoginView extends javax.swing.JFrame {
 
     private void LoginActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LoginActionPerformed
         // TODO add your handling code here:
-        String usuarioTexto = usuarioIngresar.getText();    //para obtener lo que el usuario escibe
-        String contrasenaTexto = new String(contrasena.getPassword());
+        String usuarioTexto = usuarioIngresar.getText().trim();    //para obtener lo que el usuario escibe
+        String contrasenaTexto = new String(contrasena.getPassword()).trim();
         String adminCodigo = "admin";
         String adminContrasena = "IPC1F";
         
-        if(usuarioTexto.equals(adminCodigo) && contrasenaTexto.equals(adminContrasena)){
-            javax.swing.JOptionPane.showMessageDialog(this, "Ha ingresado como administrador", "Acceso correcto", javax.swing.JOptionPane.INFORMATION_MESSAGE);
-            
-            AdminView admin = new AdminView();      //para abrir la ventana del administrador
+            if (usuarioTexto.equals(adminCodigo) && contrasenaTexto.equals(adminContrasena)) {
+            JOptionPane.showMessageDialog(this, "Ha ingresado como administrador", "Acceso correcto", JOptionPane.INFORMATION_MESSAGE);
+            AdminView admin = new AdminView();
             admin.setVisible(true);
-            this.dispose();     //para cerrar la ventana actual
-        } else{
-            javax.swing.JOptionPane.showMessageDialog(this, "Codigo o contraseña incorrectos", "Error de acceso", javax.swing.JOptionPane.ERROR_MESSAGE);
+            this.dispose();
+            return;
+        }
+
+        // Si es vendedor (leer archivo)
+        boolean vendedorEncontrado = false;
+        try (BufferedReader reader = new BufferedReader(new FileReader("vendedores.txt"))) {
+            String linea;
+            while ((linea = reader.readLine()) != null) {
+                String[] datos = linea.split(",");
+                if (datos.length >= 4) {
+                    String codigo = datos[0].trim();
+                    String nombre = datos[1].trim();
+                    String genero = datos[2].trim();
+                    String contrasena = datos[3].trim();
+
+                    // Coincide código y contraseña
+                    if (usuarioTexto.equalsIgnoreCase(codigo) && contrasenaTexto.equals(contrasena)) {
+                        vendedorEncontrado = true;
+                        JOptionPane.showMessageDialog(this, "Bienvenido, " + nombre + " (Vendedor)", "Acceso correcto", JOptionPane.INFORMATION_MESSAGE);
+                        VendedorView vendedor = new VendedorView();
+                        vendedor.setVisible(true);
+                        this.dispose();
+                        break;
+                    }
+                }
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "No se encontró el archivo de vendedores.\nPrimero debe registrar al menos un vendedor.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        // Si no encontró vendedor
+        if (!vendedorEncontrado) {
+            JOptionPane.showMessageDialog(this, "Código o contraseña incorrectos.", "Error de acceso", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_LoginActionPerformed
 

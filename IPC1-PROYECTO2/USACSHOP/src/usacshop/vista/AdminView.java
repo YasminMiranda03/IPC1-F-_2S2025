@@ -7,6 +7,8 @@ package usacshop.vista;
 //imports de otras clases para que funcione adminView
 import usacshop.vista.VendedoresView;
 import usacshop.vista.ProductosView;
+import usacshop.vista.RegistrarVendedorView;
+
 
 
 /**
@@ -38,6 +40,7 @@ public class AdminView extends javax.swing.JFrame {
         btnVendedores = new javax.swing.JButton();
         btnProductos = new javax.swing.JButton();
         btnCerrarSesion = new javax.swing.JButton();
+        btnRegristrarVendedor = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Administrador");
@@ -66,36 +69,48 @@ public class AdminView extends javax.swing.JFrame {
             }
         });
 
+        btnRegristrarVendedor.setText("Registrar Vendedor");
+        btnRegristrarVendedor.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRegristrarVendedorActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(60, 60, 60)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnProductos)
-                            .addComponent(btnVendedores)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(87, 87, 87)
-                        .addComponent(jLabel1)))
-                .addContainerGap(90, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(btnCerrarSesion)
                 .addGap(137, 137, 137))
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(87, 87, 87)
+                        .addComponent(jLabel1))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(51, 51, 51)
+                        .addComponent(btnProductos))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(26, 26, 26)
+                        .addComponent(btnVendedores)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnRegristrarVendedor)))
+                .addContainerGap(85, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGap(17, 17, 17)
                 .addComponent(jLabel1)
-                .addGap(82, 82, 82)
-                .addComponent(btnVendedores)
-                .addGap(18, 18, 18)
+                .addGap(32, 32, 32)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnVendedores)
+                    .addComponent(btnRegristrarVendedor))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 109, Short.MAX_VALUE)
                 .addComponent(btnProductos)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 47, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(btnCerrarSesion)
                 .addGap(30, 30, 30))
         );
@@ -128,6 +143,13 @@ public class AdminView extends javax.swing.JFrame {
        }
     }//GEN-LAST:event_btnCerrarSesionActionPerformed
 
+    private void btnRegristrarVendedorActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegristrarVendedorActionPerformed
+        // TODO add your handling code here:
+        RegistrarVendedorView registro = new RegistrarVendedorView();
+        registro.setVisible(true);
+        this.dispose();
+    }//GEN-LAST:event_btnRegristrarVendedorActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -156,6 +178,7 @@ public class AdminView extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCerrarSesion;
     private javax.swing.JButton btnProductos;
+    private javax.swing.JButton btnRegristrarVendedor;
     private javax.swing.JButton btnVendedores;
     private javax.swing.JLabel jLabel1;
     // End of variables declaration//GEN-END:variables
