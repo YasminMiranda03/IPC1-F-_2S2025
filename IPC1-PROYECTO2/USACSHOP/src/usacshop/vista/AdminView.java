@@ -30,31 +30,94 @@ public class AdminView extends javax.swing.JFrame {
     private void initComponents() {
 
         jLabel1 = new javax.swing.JLabel();
+        btnVendedores = new javax.swing.JButton();
+        btnProductos = new javax.swing.JButton();
+        btnCerrarSesion = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Administrador");
 
-        jLabel1.setText("Bienvenido");
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel1.setText("Bienvenido Administrador");
+
+        btnVendedores.setText("Gestionar Vendedores");
+        btnVendedores.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnVendedoresActionPerformed(evt);
+            }
+        });
+
+        btnProductos.setText("Gestionar Productos");
+        btnProductos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnProductosActionPerformed(evt);
+            }
+        });
+
+        btnCerrarSesion.setText("Cerrar sesión");
+        btnCerrarSesion.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCerrarSesionActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(116, 116, 116)
-                .addComponent(jLabel1)
-                .addContainerGap(225, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(60, 60, 60)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnProductos)
+                            .addComponent(btnVendedores)))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(87, 87, 87)
+                        .addComponent(jLabel1)))
+                .addContainerGap(90, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(btnCerrarSesion)
+                .addGap(137, 137, 137))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(44, 44, 44)
+                .addGap(17, 17, 17)
                 .addComponent(jLabel1)
-                .addContainerGap(240, Short.MAX_VALUE))
+                .addGap(82, 82, 82)
+                .addComponent(btnVendedores)
+                .addGap(18, 18, 18)
+                .addComponent(btnProductos)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 47, Short.MAX_VALUE)
+                .addComponent(btnCerrarSesion)
+                .addGap(30, 30, 30))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnVendedoresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVendedoresActionPerformed
+        // TODO add your handling code here:
+        javax.swing.JOptionPane.showMessageDialog(this, "Abrir ventana de gestion de vendedores(en construccion)");
+    }//GEN-LAST:event_btnVendedoresActionPerformed
+
+    private void btnProductosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProductosActionPerformed
+        // TODO add your handling code here:
+        javax.swing.JOptionPane.showMessageDialog(this, "Abrir ventana de gestion de productos (en construccion)");
+    }//GEN-LAST:event_btnProductosActionPerformed
+
+    private void btnCerrarSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarSesionActionPerformed
+        // TODO add your handling code here:
+        int opcion = javax.swing.JOptionPane.showConfirmDialog(this, "Desea cerrar sesion?", "Confirmar salida", javax.swing.JOptionPane.YES_NO_OPTION);
+        
+        if (opcion == javax.swing.JOptionPane.YES_NO_OPTION);{
+        LoginView login = new LoginView();
+        login.setVisible(true);
+        this.dispose();
+       }
+    }//GEN-LAST:event_btnCerrarSesionActionPerformed
 
     /**
      * @param args the command line arguments
@@ -82,6 +145,9 @@ public class AdminView extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnCerrarSesion;
+    private javax.swing.JButton btnProductos;
+    private javax.swing.JButton btnVendedores;
     private javax.swing.JLabel jLabel1;
     // End of variables declaration//GEN-END:variables
 }
