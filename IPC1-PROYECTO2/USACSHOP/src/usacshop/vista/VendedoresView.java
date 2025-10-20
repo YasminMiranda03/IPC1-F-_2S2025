@@ -6,6 +6,13 @@ package usacshop.vista;
 
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JOptionPane;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import javax.swing.*;
+import java.io.*;
 
 /**
  *
@@ -17,24 +24,72 @@ public class VendedoresView extends javax.swing.JFrame {
     
     DefaultTableModel modelo;
     
-    private int contadorVendedores = 1;     //contador para codigo de los vendedores
-
+    private  static int contadorVendedores = 1;     //contador para codigo de los vendedores
+    private int i = 0;
     /**
      * Creates new form VendedorView
      */
     public VendedoresView() {
         initComponents();
         setLocationRelativeTo(null);
+        setTitle("Gestion de Vendedores");
         
         modelo = new DefaultTableModel();
         modelo.addColumn("Codigo");
         modelo.addColumn("Nombre");
-        modelo.addColumn("Correo");
-        modelo.addColumn("Telefono");
+        modelo.addColumn("Genero");
+        modelo.addColumn("Cantidad de ventas");
         
         tablaVendedores.setModel(modelo);
+        cargarVendedores();
+        
     }
 
+    public void cargarVendedores(){
+        modelo.setRowCount(0);
+        File archivo = new File("vendedores.txt");
+        if (!archivo.exists()) {
+            try {
+                archivo.createNewFile();
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(this, "Error al crear archivo vendedores.txt");
+                return;
+            }
+        }
+        modelo.setRowCount(0); // limpiar tabla
+        try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                
+                String[] datos = linea.split(",");
+                if (datos.length >= 4) {
+                    String codigo = datos[0];
+                    String nombre = datos[1];
+                    String genero = datos[2];
+                    String cantidadVentas = datos[3]; // CAMBIO AQUÍ: antes se tomaba la contraseña
+
+                    modelo.addRow(new Object[]{codigo, nombre, genero, cantidadVentas});
+                }
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Error al leer vendedores: " + e.getMessage());
+        }
+    }
+    private void guardarVendedores(){
+        try(BufferedWriter bw = new BufferedWriter(new FileWriter("vendedores.txt"))){
+            for (int i = 0; i < modelo.getRowCount(); i++){
+                String codigo = modelo.getValueAt(i, 0).toString();
+                String nombre = modelo.getValueAt(i, 1).toString();
+                String genero = modelo.getValueAt(i, 2).toString();
+                String cantidadVentas = modelo.getValueAt(i, 3).toString();
+                
+                bw.write(codigo + "," + nombre + "," + genero + cantidadVentas + ", usuario, contraseña");
+                bw.newLine();
+            }
+        } catch (IOException e){
+            JOptionPane.showMessageDialog(this, "Error al guardar vendedores; " + e.getMessage());
+        }
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -149,14 +204,13 @@ public class VendedoresView extends javax.swing.JFrame {
 
     private void btnAgregarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarActionPerformed
         // TODO add your handling code here:
-        String codigo = "V" + contadorVendedores;
-        contadorVendedores++;
+        String codigo = "V" + contadorVendedores++;
         String nombre = JOptionPane.showInputDialog("Ingrese el nombre del vendedor");
-        String correo = JOptionPane.showInputDialog("Ingrese correo del vendedor");
-        String telefono = JOptionPane.showInputDialog("Ingrese telefono del vendedor");
+        String genero = JOptionPane.showInputDialog("Ingrese genero del vendedor");
         
-        if (nombre != null && correo != null && telefono != null){
-            modelo.addRow(new Object[]{codigo, nombre, correo, telefono});
+        if (nombre != null && genero != null){
+            modelo.addRow(new Object[]{codigo, nombre, genero, "0"});
+            guardarVendedores();
         }
     }//GEN-LAST:event_btnAgregarActionPerformed
 
@@ -166,6 +220,7 @@ public class VendedoresView extends javax.swing.JFrame {
         
         if (filaSeleccionada >= 0){
             modelo.removeRow(filaSeleccionada);
+            guardarVendedores();
         } else {
             JOptionPane.showMessageDialog(this, "Seleccione una fila para eliminar");
         }
@@ -185,19 +240,17 @@ public class VendedoresView extends javax.swing.JFrame {
         if (filaSeleccionada >= 0) {
             
             String nombre = (String) modelo.getValueAt(filaSeleccionada, 1);
-            String correo = (String) modelo.getValueAt(filaSeleccionada, 2);
-            String telefono = (String) modelo.getValueAt(filaSeleccionada, 3);
-
+            String genero = (String) modelo.getValueAt(filaSeleccionada, 2);
+            
             
             String nuevoNombre = JOptionPane.showInputDialog(this, "Nuevo nombre:", nombre);
-            String nuevoCorreo = JOptionPane.showInputDialog(this, "Nuevo correo:", correo);
-            String nuevoTelefono = JOptionPane.showInputDialog(this, "Nuevo teléfono:", telefono);
-
-            if (nuevoNombre != null && nuevoCorreo != null && nuevoTelefono != null) {
+            String nuevoGenero = JOptionPane.showInputDialog(this, "Nuevo genero:", genero);
+            
+            if (nuevoNombre != null && nuevoGenero != null) {
                 
                 modelo.setValueAt(nuevoNombre, filaSeleccionada, 1);
-                modelo.setValueAt(nuevoCorreo, filaSeleccionada, 2);
-                modelo.setValueAt(nuevoTelefono, filaSeleccionada, 3);
+                modelo.setValueAt(nuevoGenero, filaSeleccionada, 2);
+                guardarVendedores();
             }
 
         } else {

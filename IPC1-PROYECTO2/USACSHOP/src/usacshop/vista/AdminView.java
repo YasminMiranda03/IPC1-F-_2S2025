@@ -9,6 +9,12 @@ import usacshop.vista.VendedoresView;
 import usacshop.vista.ProductosView;
 import usacshop.vista.RegistrarVendedorView;
 
+import java.io.File;          //para verificar archivos
+import java.io.FileWriter;    //para guardar datos
+import java.io.IOException;   //manejo de excepciones
+import java.io.PrintWriter;   //para escribir en archivos
+import javax.swing.JOptionPane; 
+
 
 
 /**
@@ -121,6 +127,7 @@ public class AdminView extends javax.swing.JFrame {
     private void btnVendedoresActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVendedoresActionPerformed
         // TODO add your handling code here:
         VendedoresView v = new VendedoresView();
+        v.cargarVendedores();       //llama al metodo para leer el archivo y cargar los vendedores
         v.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btnVendedoresActionPerformed
@@ -128,6 +135,7 @@ public class AdminView extends javax.swing.JFrame {
     private void btnProductosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnProductosActionPerformed
         // TODO add your handling code here:
         ProductosView p = new ProductosView();
+        p.cargarProductos();        //lee el archivo
         p.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btnProductosActionPerformed
@@ -136,7 +144,7 @@ public class AdminView extends javax.swing.JFrame {
         // TODO add your handling code here:
         int opcion = javax.swing.JOptionPane.showConfirmDialog(this, "Desea cerrar sesion?", "Confirmar salida", javax.swing.JOptionPane.YES_NO_OPTION);
         
-        if (opcion == javax.swing.JOptionPane.YES_NO_OPTION);{
+        if (opcion == JOptionPane.YES_NO_OPTION);{
         LoginView login = new LoginView();
         login.setVisible(true);
         this.dispose();
@@ -150,6 +158,23 @@ public class AdminView extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_btnRegristrarVendedorActionPerformed
 
+    public static void guardarProducto(String codigo, String nombre, double precio, int cantidad){
+       try (FileWriter fw = new FileWriter("productos.txt", true);
+             PrintWriter pw = new PrintWriter(fw)) {
+            pw.println(codigo + "," + nombre + "," + precio + "," + cantidad);
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Error al guardar producto: " + e.getMessage());
+        }
+    }
+    
+    public static void guardarVendedor(String codigo, String nombre, String genero, String contrasena) {
+        try (FileWriter fw = new FileWriter("vendedores.txt", true);
+             PrintWriter pw = new PrintWriter(fw)) {
+            pw.println(codigo + "," + nombre + "," + genero + "," + contrasena);
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Error al guardar vendedor: " + e.getMessage());
+        }
+    }
     /**
      * @param args the command line arguments
      */

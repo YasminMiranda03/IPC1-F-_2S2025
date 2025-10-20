@@ -17,7 +17,7 @@ public class ProductoAlimento extends Producto{
     
     @Override
     public String getDetalle(){
-        returns "Caduca el;¡: " + fechaCaducidad;
+        returns; "Caduca el;¡: " + fechaCaducidad;
     }
             
 }

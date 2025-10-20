@@ -67,9 +67,8 @@ public class RegistrarClienteView extends javax.swing.JFrame {
 
     private void cargarGenero() {
         cmbGenero.removeAllItems();
-        cmbGenero.addItem("Masculino");
         cmbGenero.addItem("Femenino");
-        cmbGenero.addItem("Otro");
+        cmbGenero.addItem("Masculino");
     }
 
     /**
@@ -112,6 +111,11 @@ public class RegistrarClienteView extends javax.swing.JFrame {
         txtNombre.setColumns(5);
 
         cmbGenero.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cmbGenero.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                cmbGeneroActionPerformed(evt);
+            }
+        });
 
         txtContrasena.setColumns(5);
 
@@ -229,6 +233,10 @@ public class RegistrarClienteView extends javax.swing.JFrame {
         vendedor.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btnCancelarActionPerformed
+
+    private void cmbGeneroActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cmbGeneroActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_cmbGeneroActionPerformed
 
     
     /**

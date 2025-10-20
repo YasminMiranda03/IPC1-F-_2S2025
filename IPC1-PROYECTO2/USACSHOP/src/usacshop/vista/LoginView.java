@@ -131,6 +131,7 @@ public class LoginView extends javax.swing.JFrame {
         String adminCodigo = "admin";
         String adminContrasena = "IPC1F";
         
+        //Login del admin
             if (usuarioTexto.equals(adminCodigo) && contrasenaTexto.equals(adminContrasena)) {
             JOptionPane.showMessageDialog(this, "Ha ingresado como administrador", "Acceso correcto", JOptionPane.INFORMATION_MESSAGE);
             AdminView admin = new AdminView();
@@ -139,6 +140,7 @@ public class LoginView extends javax.swing.JFrame {
             return;
         }
 
+        //login de vendedor
         // Si es vendedor (leer archivo)
         boolean vendedorEncontrado = false;
         try (BufferedReader reader = new BufferedReader(new FileReader("vendedores.txt"))) {
@@ -165,9 +167,35 @@ public class LoginView extends javax.swing.JFrame {
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this, "No se encontró el archivo de vendedores.\nPrimero debe registrar al menos un vendedor.", "Error", JOptionPane.ERROR_MESSAGE);
         }
+        
+        //login de cliente
+         boolean clienteEncontrado = false;
+    try (BufferedReader reader = new BufferedReader(new FileReader("clientes.txt"))) {
+        String linea;
+        while ((linea = reader.readLine()) != null) {
+            String[] datos = linea.split(",");
+            if (datos.length >= 4) {
+                String codigo = datos[0].trim();
+                String nombre = datos[1].trim();
+                String genero = datos[2].trim();
+                String contrasena = datos[3].trim();
 
-        // Si no encontró vendedor
-        if (!vendedorEncontrado) {
+                if (usuarioTexto.equalsIgnoreCase(codigo) && contrasenaTexto.equals(contrasena)) {
+                    clienteEncontrado = true;
+                    JOptionPane.showMessageDialog(this, "Bienvenido, " + nombre + " (Cliente)", "Acceso correcto", JOptionPane.INFORMATION_MESSAGE);
+                    ClienteView cliente = new ClienteView();
+                    cliente.setVisible(true);
+                    this.dispose();
+                    return;
+                }
+            }
+        }
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(this, "No se encontró el archivo de clientes.\nPrimero debe registrar al menos un cliente.", "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+        // Si no encontró vendedor ni cliente
+        if (!vendedorEncontrado && !clienteEncontrado) {
             JOptionPane.showMessageDialog(this, "Código o contraseña incorrectos.", "Error de acceso", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_LoginActionPerformed

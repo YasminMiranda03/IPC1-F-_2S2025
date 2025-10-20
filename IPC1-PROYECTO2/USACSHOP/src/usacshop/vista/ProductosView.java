@@ -6,6 +6,10 @@ package usacshop.vista;
 
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 /**
  *
  * @author Katherin Yasmin
@@ -31,6 +35,27 @@ public class ProductosView extends javax.swing.JFrame {
         modelo.addColumn("Cantidad");
         
         tablaProductos.setModel(modelo);
+        cargarProductos();      //cargar productos desde el archivo
+    }
+    
+    public void cargarProductos(){
+        modelo.setRowCount(0);
+        File archivo = new File("productos.txt");
+        if(archivo.exists()){
+            try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
+                String linea;
+                while ((linea = br.readLine()) != null) {
+                    String[] datos = linea.split(",");
+                    if (datos.length >= 4) {
+                        modelo.addRow(new Object[]{
+                            datos[0], datos[1], datos[2], datos[3]
+                        });
+                    }
+                }
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(this, "Error al leer productos: " + e.getMessage());
+            }
+        }
     }
 
     /**

@@ -79,6 +79,7 @@ public class RegistrarVendedorView extends javax.swing.JFrame {
 
         jLabel5.setText("Contraseña");
 
+        txtCodigo.setEditable(false);
         txtCodigo.setColumns(5);
 
         txtNombre.setColumns(5);

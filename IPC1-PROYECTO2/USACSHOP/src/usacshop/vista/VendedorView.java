@@ -8,6 +8,15 @@ import usacshop.vista.RegistrarClienteView;
 
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import java.io.BufferedReader;      //para leer los archivos txt
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.io.PrintWriter;
 
 /**
  *
@@ -161,30 +170,76 @@ public class VendedorView extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private String generarCodigoProducto(){
+        File archivo = new File("productos.txt");
+        int ultimoNumero = 0;
+        
+        if (archivo.exists()){
+            try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
+                String linea;
+                while ((linea = br.readLine()) != null) {
+                    String[] datos = linea.split(",");
+                    if (datos.length > 0) {
+                        String codigo = datos[0].trim(); // P001
+                        if (codigo.startsWith("P")) {
+                            int num = Integer.parseInt(codigo.substring(1));
+                            if (num > ultimoNumero) {
+                                ultimoNumero = num;
+                            }
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(this, "Error al leer productos para generar código: " + e.getMessage());
+            }
+        }
+        int nuevoNumero = ultimoNumero + 1;
+        return String.format("P%03d", nuevoNumero);
+    }
     private void btnRegistrarVentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarVentaActionPerformed
         // TODO add your handling code here:
         int filaSeleccionada = tablaProductosVenta.getSelectedRow();
 
         if (filaSeleccionada >= 0) {
+            String codigo = (String) modeloProductos.getValueAt(filaSeleccionada, 0); // código existente
             String nombre = (String) modeloProductos.getValueAt(filaSeleccionada, 1);
             double precio = Double.parseDouble((String) modeloProductos.getValueAt(filaSeleccionada, 2));
             int stock = Integer.parseInt((String) modeloProductos.getValueAt(filaSeleccionada, 3));
 
             String cantidadStr = JOptionPane.showInputDialog(this, "Ingrese cantidad a vender:");
             if (cantidadStr != null) {
-                int cantidadVenta = Integer.parseInt(cantidadStr);
+                int cantidadVenta;
+
+                try {
+                    cantidadVenta = Integer.parseInt(cantidadStr);
+                } catch (NumberFormatException e) {
+                    JOptionPane.showMessageDialog(this, "Ingrese un número válido.");
+                    return;
+                }
+
+                if (cantidadVenta <= 0) {
+                    JOptionPane.showMessageDialog(this, "La cantidad debe ser mayor que cero.");
+                    return;
+                }
 
                 if (cantidadVenta <= stock) {
-                    // Calcular total
                     double subtotal = cantidadVenta * precio;
-                    totalVenta += subtotal;
-                    txtTotal.setText(String.valueOf(totalVenta));
 
-                    // Actualizar stock
+                    // Actualizar stock en tabla
                     int nuevoStock = stock - cantidadVenta;
                     modeloProductos.setValueAt(String.valueOf(nuevoStock), filaSeleccionada, 3);
 
-                    JOptionPane.showMessageDialog(this, 
+                    // Actualizar stock en archivo
+                    actualizarStockProducto(codigo, nuevoStock);
+
+                    // Registrar venta en archivo
+                    registrarVenta(codigo, nombre, cantidadVenta, precio, subtotal);
+
+                    // Actualizar total
+                    totalVenta += subtotal;
+                    txtTotal.setText(String.valueOf(totalVenta));
+
+                    JOptionPane.showMessageDialog(this,
                         "Venta registrada de " + cantidadVenta + " " + nombre + "(s)\nSubtotal: Q" + subtotal);
                 } else {
                     JOptionPane.showMessageDialog(this, "No hay suficiente stock para esa cantidad.");
@@ -195,6 +250,45 @@ public class VendedorView extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnRegistrarVentaActionPerformed
 
+    private void actualizarStockProducto(String codigoProducto, int nuevoStock) {
+        File archivo = new File("productos.txt");
+        File temp = new File("productos_temp.txt");
+
+        try (BufferedReader br = new BufferedReader(new FileReader(archivo));
+             PrintWriter pw = new PrintWriter(new FileWriter(temp))) {
+
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                String[] partes = linea.split(",");
+                if (partes[0].equals(codigoProducto)) {
+                    partes[3] = String.valueOf(nuevoStock);
+                    pw.println(String.join(",", partes));
+                } else {
+                    pw.println(linea);
+                }
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Error al actualizar stock: " + e.getMessage());
+            return;
+        }
+
+        archivo.delete();
+        temp.renameTo(archivo);
+    }
+    
+    private void registrarVenta(String codigo, String nombre, int cantidad, double precioUnitario, double total) {
+        try (FileWriter fw = new FileWriter("ventas.txt", true);
+             PrintWriter pw = new PrintWriter(fw)) {
+
+            LocalDateTime fecha = LocalDateTime.now();
+            DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+            String fechaHora = fecha.format(formato);
+
+            pw.println(codigo + "," + nombre + "," + cantidad + "," + precioUnitario + "," + total + "," + fechaHora);
+        }catch (IOException e){
+            JOptionPane.showMessageDialog(this, "Error al ingresar la venta: " + e.getMessage());
+            }
+        }    
     private void btnCerrarSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarSesionActionPerformed
         // TODO add your handling code here:
         LoginView login = new LoginView();
