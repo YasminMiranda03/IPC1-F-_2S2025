@@ -38,6 +38,7 @@ public class VendedoresView extends javax.swing.JFrame {
         modelo.addColumn("Codigo");
         modelo.addColumn("Nombre");
         modelo.addColumn("Genero");
+        modelo.addColumn("Contraseña");
         modelo.addColumn("Cantidad de ventas");
         
         tablaVendedores.setModel(modelo);
@@ -66,9 +67,10 @@ public class VendedoresView extends javax.swing.JFrame {
                     String codigo = datos[0];
                     String nombre = datos[1];
                     String genero = datos[2];
-                    String cantidadVentas = datos[3]; // CAMBIO AQUÍ: antes se tomaba la contraseña
+                    String contrasena = datos[3];
+                    String cantidadVentas = (datos.length >= 5) ? datos[4] : "0"; 
 
-                    modelo.addRow(new Object[]{codigo, nombre, genero, cantidadVentas});
+                    modelo.addRow(new Object[]{codigo, nombre, genero, contrasena, cantidadVentas});
                 }
             }
         } catch (IOException e) {
@@ -81,9 +83,10 @@ public class VendedoresView extends javax.swing.JFrame {
                 String codigo = modelo.getValueAt(i, 0).toString();
                 String nombre = modelo.getValueAt(i, 1).toString();
                 String genero = modelo.getValueAt(i, 2).toString();
-                String cantidadVentas = modelo.getValueAt(i, 3).toString();
+                String contrasena = modelo.getValueAt(i, 3).toString();
+                String cantidadVentas = modelo.getValueAt(i, 4).toString();
                 
-                bw.write(codigo + "," + nombre + "," + genero + cantidadVentas + ", usuario, contraseña");
+                bw.write(codigo + "," + nombre + "," + genero + "," + contrasena + "," +cantidadVentas);
                 bw.newLine();
             }
         } catch (IOException e){
