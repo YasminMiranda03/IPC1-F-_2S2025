@@ -7,8 +7,10 @@ package usacshop.vista;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 /**
  *
@@ -31,11 +33,23 @@ public class ProductosView extends javax.swing.JFrame {
         modelo = new DefaultTableModel();
         modelo.addColumn("Código");
         modelo.addColumn("Nombre");
-        modelo.addColumn("Precio");
-        modelo.addColumn("Cantidad");
+        modelo.addColumn("Categoria");
+        modelo.addColumn("Acciones");
         
         tablaProductos.setModel(modelo);
         cargarProductos();      //cargar productos desde el archivo
+    
+        tablaProductos.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                int fila = tablaProductos.rowAtPoint(evt.getPoint());
+                int columna = tablaProductos.columnAtPoint(evt.getPoint());
+
+                if (columna == 3 && fila >= 0) { // columna "Acciones"
+                    mostrarDetalleProducto(fila);
+                }
+            }
+        });
     }
     
     public void cargarProductos(){
@@ -45,11 +59,10 @@ public class ProductosView extends javax.swing.JFrame {
             try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
                 String linea;
                 while ((linea = br.readLine()) != null) {
-                    String[] datos = linea.split(",");
+                    String[] datos = linea.split(",", 4);
                     if (datos.length >= 4) {
                         modelo.addRow(new Object[]{
-                            datos[0], datos[1], datos[2], datos[3]
-                        });
+                            datos[0], datos[1], datos[2], "Ver detalle"});
                     }
                 }
             } catch (IOException e) {
@@ -57,6 +70,73 @@ public class ProductosView extends javax.swing.JFrame {
             }
         }
     }
+    
+    public void guardarProductos(String codigo, String nombre, String categoria, String detalle){
+        try (java.io.BufferedWriter bw = new java.io.BufferedWriter(new java.io.FileWriter("productos.txt", true))){
+            bw.write(codigo + "," + nombre + "," + categoria + "," + detalle);
+            bw.newLine();
+        } catch (java.io.IOException e){
+            JOptionPane.showMessageDialog(this, "Error al guardar producto: " + e.getMessage());
+        }
+    }
+    
+    private void mostrarDetalleProducto(int fila){
+        String codigo = modelo.getValueAt(fila, 0).toString();
+        String nombre = modelo.getValueAt(fila, 1).toString();
+        String categoria = modelo.getValueAt(fila, 2).toString();
+        String detalle = "";
+
+        try (BufferedReader br = new BufferedReader(new FileReader("productos.txt"))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                String[] datos = linea.split(",", 4);
+                if (datos[0].equals(codigo)) {
+                    detalle = datos[3];
+                    break;
+                }
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Error al leer detalles: " + e.getMessage());
+        }
+
+        JOptionPane.showMessageDialog(this,
+            "Código: " + codigo +
+            "\nNombre: " + nombre +
+            "\nCategoría: " + categoria +
+            "\nDetalle: " + detalle,
+            "Detalle del Producto",
+            JOptionPane.INFORMATION_MESSAGE);
+    }
+    
+    private void actualizarArchivoProductos(String codigoModificado, String nuevoNombre, String nuevaCategoria, String nuevoDetalle) {
+    File archivo = new File("productos.txt");
+    File temp = new File("productos_temp.txt");
+
+    try (BufferedReader br = new BufferedReader(new FileReader(archivo));
+         BufferedWriter bw = new BufferedWriter(new FileWriter(temp))) {
+
+        String linea;
+        while ((linea = br.readLine()) != null) {
+            String[] datos = linea.split(",", 4);
+            if (datos[0].equals(codigoModificado)) {
+                bw.write(codigoModificado + "," + nuevoNombre + "," + nuevaCategoria + "," + nuevoDetalle);
+            } else {
+                bw.write(linea);
+            }
+            bw.newLine();
+        }
+    } catch (IOException e) {
+        JOptionPane.showMessageDialog(this, "Error al actualizar archivo: " + e.getMessage());
+        return;
+    }
+
+    // Reemplazar el archivo original
+    if (archivo.delete()) {
+        temp.renameTo(archivo);
+    } else {
+        JOptionPane.showMessageDialog(this, "Error al reemplazar archivo de productos.");
+    }
+}
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -90,7 +170,7 @@ public class ProductosView extends javax.swing.JFrame {
                 {null, null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Codigo", "Nombre", "Categoria", "Acciones"
             }
         ));
         jScrollPane2.setViewportView(tablaProductos);
@@ -180,12 +260,27 @@ public class ProductosView extends javax.swing.JFrame {
         contadorProductos++;
         
         String nombre = JOptionPane.showInputDialog(this, "Ingrese nombre del producto:");
-        String precio = JOptionPane.showInputDialog(this, "Ingrese precio:");
-        String cantidad = JOptionPane.showInputDialog(this, "Ingrese cantidad:");
-
-        if (codigo != null && nombre != null && precio != null && cantidad != null) {
-            modelo.addRow(new Object[]{codigo.trim(), nombre.trim(), precio.trim(), cantidad.trim()});
+        if (nombre == null || nombre.trim().isEmpty()) return;
+        
+        String[] categorias = {"Tecnologia", "Alimento", "General"};
+        String categoria = (String) JOptionPane.showInputDialog(this, "Seleccione la categoria","Categoria", JOptionPane.QUESTION_MESSAGE, null, categorias, categorias[0]);
+        if (categoria == null)
+            return;
+        
+        String detalle = "";
+        switch (categoria) {
+            case "Tecnológico":
+                detalle = JOptionPane.showInputDialog(this, "Meses de garantía:");
+                break;
+            case "Alimento":
+                detalle = JOptionPane.showInputDialog(this, "Fecha de caducidad (dd/mm/aaaa):");
+                break;
+            case "General":
+                detalle = JOptionPane.showInputDialog(this, "Material del producto:");
+                break;
         }
+        modelo.addRow(new Object[]{codigo, nombre, categoria, "Ver Detalle"});
+        guardarProductos(codigo, nombre, categoria, detalle);
     }//GEN-LAST:event_btnAgregarActionPerformed
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
@@ -209,25 +304,65 @@ public class ProductosView extends javax.swing.JFrame {
         // TODO add your handling code here:
         int filaSeleccionada = tablaProductos.getSelectedRow();
 
-        if (filaSeleccionada >= 0) {
-            // Obtener los valores actuales
-            String nombreActual = (String) modelo.getValueAt(filaSeleccionada, 1);
-            String precioActual = (String) modelo.getValueAt(filaSeleccionada, 2);
-            String cantidadActual = (String) modelo.getValueAt(filaSeleccionada, 3);
+        if (filaSeleccionada >= -1) {
+            if (filaSeleccionada == -1) {
+            JOptionPane.showMessageDialog(this, "Seleccione un producto para modificar");
+            return;
+        }
 
-            // Pedimos los nuevos valores (menos el código)
-            String nuevoNombre = JOptionPane.showInputDialog(this, "Nuevo nombre:", nombreActual);
-            String nuevoPrecio = JOptionPane.showInputDialog(this, "Nuevo precio:", precioActual);
-            String nuevaCantidad = JOptionPane.showInputDialog(this, "Nueva cantidad:", cantidadActual);
+        // Obtener datos actuales
+        String codigo = modelo.getValueAt(filaSeleccionada, 0).toString();
+        String nombreActual = modelo.getValueAt(filaSeleccionada, 1).toString();
+        String categoriaActual = modelo.getValueAt(filaSeleccionada, 2).toString();
+        String detalleActual = "";
 
-            if (nuevoNombre != null && nuevoPrecio != null && nuevaCantidad != null) {
-                modelo.setValueAt(nuevoNombre, filaSeleccionada, 1);
-                modelo.setValueAt(nuevoPrecio, filaSeleccionada, 2);
-                modelo.setValueAt(nuevaCantidad, filaSeleccionada, 3);
+        // Buscar el detalle en el archivo
+        try (BufferedReader br = new BufferedReader(new FileReader("productos.txt"))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                String[] datos = linea.split(",", 4);
+                if (datos[0].equals(codigo)) {
+                    if (datos.length >= 4) detalleActual = datos[3];
+                    break;
+                }
             }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Error al leer archivo: " + e.getMessage());
+        }
 
-        } else {
-            JOptionPane.showMessageDialog(this, "Seleccione una fila para modificar");
+        // Pedir nuevos valores
+        String nuevoNombre = JOptionPane.showInputDialog(this, "Nuevo nombre:", nombreActual);
+        if (nuevoNombre == null || nuevoNombre.trim().isEmpty()) return;
+
+        String[] categorias = {"Tecnologia", "Alimento", "General"};
+        String nuevaCategoria = (String) JOptionPane.showInputDialog(
+                this, "Seleccione la nueva categoría:", "Categoría",
+                JOptionPane.QUESTION_MESSAGE, null, categorias, categoriaActual);
+        if (nuevaCategoria == null) return;
+
+        String nuevoDetalle = "";
+        switch (nuevaCategoria) {
+            case "Tecnologia":
+                nuevoDetalle = JOptionPane.showInputDialog(this, "Meses de garantía:", detalleActual);
+                break;
+            case "Alimento":
+                nuevoDetalle = JOptionPane.showInputDialog(this, "Fecha de caducidad (dd/mm/aaaa):", detalleActual);
+                break;
+            case "General":
+                nuevoDetalle = JOptionPane.showInputDialog(this, "Material del producto:", detalleActual);
+                break;
+        }
+
+        if (nuevoDetalle == null || nuevoDetalle.trim().isEmpty()) return;
+
+        // Actualizar tabla
+        modelo.setValueAt(nuevoNombre, filaSeleccionada, 1);
+        modelo.setValueAt(nuevaCategoria, filaSeleccionada, 2);
+
+        // Actualizar archivo
+        actualizarArchivoProductos(codigo, nuevoNombre, nuevaCategoria, nuevoDetalle);
+
+        JOptionPane.showMessageDialog(this, "Producto modificado correctamente.");
         }
     }//GEN-LAST:event_btnModificarActionPerformed
 

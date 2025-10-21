@@ -1,0 +1,4 @@
+P4,ñ,Tecnologia,
+P5,l,Tecnologia,
+P1,CARRO,General,acero
+P1,agua,Alimento,23/10/2025

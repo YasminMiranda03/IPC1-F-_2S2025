@@ -79,7 +79,7 @@ public class VendedorView extends javax.swing.JFrame {
                 {null, null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Codigo", "Nombre", "Categoria", "Acciones"
             }
         ));
         jScrollPane1.setViewportView(tablaProductosVenta);
