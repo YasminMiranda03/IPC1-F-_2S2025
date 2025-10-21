@@ -108,35 +108,36 @@ public class ProductosView extends javax.swing.JFrame {
             JOptionPane.INFORMATION_MESSAGE);
     }
     
-    private void actualizarArchivoProductos(String codigoModificado, String nuevoNombre, String nuevaCategoria, String nuevoDetalle) {
-    File archivo = new File("productos.txt");
-    File temp = new File("productos_temp.txt");
+    private void actualizarArchivo(int fila, String codigo, String nombre, String categoria, String detalle) {
+        File archivo = new File("productos.txt");
+        if (!archivo.exists()) return;
 
-    try (BufferedReader br = new BufferedReader(new FileReader(archivo));
-         BufferedWriter bw = new BufferedWriter(new FileWriter(temp))) {
-
-        String linea;
-        while ((linea = br.readLine()) != null) {
-            String[] datos = linea.split(",", 4);
-            if (datos[0].equals(codigoModificado)) {
-                bw.write(codigoModificado + "," + nuevoNombre + "," + nuevaCategoria + "," + nuevoDetalle);
-            } else {
-                bw.write(linea);
+        try {
+            // Leemos todo el archivo
+            BufferedReader br = new BufferedReader(new FileReader(archivo));
+            StringBuilder sb = new StringBuilder();
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                String[] datos = linea.split(",", 4);
+                if (datos[0].equals(codigo)) {
+                    sb.append(codigo).append(",").append(nombre).append(",").append(categoria).append(",").append(detalle).append("\n");
+                } else {
+                    sb.append(linea).append("\n");
+                }
             }
-            bw.newLine();
+            br.close();
+
+            // Reescribimos el archivo completo
+            BufferedWriter bw = new BufferedWriter(new FileWriter(archivo));
+            bw.write(sb.toString());
+            bw.close();
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Error al actualizar el producto: " + e.getMessage());
         }
-    } catch (IOException e) {
-        JOptionPane.showMessageDialog(this, "Error al actualizar archivo: " + e.getMessage());
-        return;
     }
 
-    // Reemplazar el archivo original
-    if (archivo.delete()) {
-        temp.renameTo(archivo);
-    } else {
-        JOptionPane.showMessageDialog(this, "Error al reemplazar archivo de productos.");
-    }
-}
+    
+   
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -269,7 +270,7 @@ public class ProductosView extends javax.swing.JFrame {
         
         String detalle = "";
         switch (categoria) {
-            case "Tecnológico":
+            case "Tecnologia":
                 detalle = JOptionPane.showInputDialog(this, "Meses de garantía:");
                 break;
             case "Alimento":
@@ -359,8 +360,7 @@ public class ProductosView extends javax.swing.JFrame {
         modelo.setValueAt(nuevoNombre, filaSeleccionada, 1);
         modelo.setValueAt(nuevaCategoria, filaSeleccionada, 2);
 
-        // Actualizar archivo
-        actualizarArchivoProductos(codigo, nuevoNombre, nuevaCategoria, nuevoDetalle);
+        
 
         JOptionPane.showMessageDialog(this, "Producto modificado correctamente.");
         }
