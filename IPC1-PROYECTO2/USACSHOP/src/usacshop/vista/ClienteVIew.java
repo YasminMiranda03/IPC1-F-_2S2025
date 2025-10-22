@@ -24,6 +24,7 @@ public class ClienteView extends javax.swing.JFrame {
     public ClienteView() {
         initComponents();
         setLocationRelativeTo(null);
+        btnVerProductosActionPerformed(null);
     }
 
     /**
@@ -72,7 +73,7 @@ public class ClienteView extends javax.swing.JFrame {
                 {null, null, null, null}
             },
             new String [] {
-                "Codigo", "Nombre", "Precio", "Cantidad"
+                "Codigo", "Nombre", "Categoria", "Detalles"
             }
         ));
         jScrollPane1.setViewportView(tablaProductos);
@@ -141,26 +142,37 @@ public class ClienteView extends javax.swing.JFrame {
         // TODO add your handling code here:
         //modelo de la tabla
         DefaultTableModel modelo = new DefaultTableModel();
-        modelo.addColumn("Codigo");
+        modelo.addColumn("Código");
         modelo.addColumn("Nombre");
-        modelo.addColumn("Precio");
-        modelo.addColumn("Cantidad");
+        modelo.addColumn("Categoría");
+        modelo.addColumn("Detalles");
+
         try (BufferedReader reader = new BufferedReader(new FileReader("productos.txt"))) {
-        String linea;
-        while ((linea = reader.readLine()) != null) {
-            String[] datos = linea.split(",");
-            if (datos.length >= 4) {
-                String codigo = datos[0].trim();
-                String nombre = datos[1].trim();
-                String precio = datos[2].trim();
-                String cantidad = datos[3].trim();
-                modelo.addRow(new Object[]{codigo, nombre, precio, cantidad});
+            String linea;
+            while ((linea = reader.readLine()) != null) {
+                // Separar los datos por coma
+                String[] datos = linea.split(",");
+                if (datos.length >= 4) {
+                    String codigo = datos[0].trim();
+                    String nombre = datos[1].trim();
+                    String categoria = datos[2].trim();
+                    String detalles = datos[3].trim();
+
+                    // Agregar la fila al modelo
+                    modelo.addRow(new Object[]{codigo, nombre, categoria, detalles});
+                }
             }
+
+            // Asignar el modelo a la tabla
+            tablaProductos.setModel(modelo);
+            tablaProductos.repaint();
+
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, 
+                "Error al leer el archivo de productos.\n" + e.getMessage(), 
+                "Error", 
+                JOptionPane.ERROR_MESSAGE);
         }
-        tablaProductos.setModel(modelo);
-    } catch (IOException e) {
-        JOptionPane.showMessageDialog(this, "Error al leer el archivo de productos.", "Error", JOptionPane.ERROR_MESSAGE);
-    }
     }//GEN-LAST:event_btnVerProductosActionPerformed
 
     private void btnCerrarSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarSesionActionPerformed
