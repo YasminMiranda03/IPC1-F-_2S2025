@@ -169,7 +169,9 @@ public class VendedorView extends javax.swing.JFrame {
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    
+    
+    
     private String generarCodigoProducto(){
         File archivo = new File("productos.txt");
         int ultimoNumero = 0;

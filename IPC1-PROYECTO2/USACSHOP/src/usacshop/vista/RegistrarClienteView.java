@@ -9,7 +9,7 @@ import javax.swing.*;
 
 /**
  *
- * @author APROJUSA
+ * @author Katherin Yasmin
  */
 public class RegistrarClienteView extends javax.swing.JFrame {
     
@@ -103,7 +103,7 @@ public class RegistrarClienteView extends javax.swing.JFrame {
 
         jLabel4.setText("Genero");
 
-        jLabel5.setText("Contraseña");
+        jLabel5.setText("Fecha de Nacimiento");
 
         txtCodigo.setEditable(false);
         txtCodigo.setColumns(5);
@@ -143,13 +143,14 @@ public class RegistrarClienteView extends javax.swing.JFrame {
                 .addGap(96, 96, 96))
             .addGroup(layout.createSequentialGroup()
                 .addGap(68, 68, 68)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(jLabel5)
-                        .addComponent(jLabel4)
-                        .addComponent(jLabel3)
-                        .addComponent(jLabel2))
-                    .addComponent(btnGuardar))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel5)
+                    .addComponent(jLabel4)
+                    .addComponent(jLabel3)
+                    .addComponent(jLabel2)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnGuardar)
+                        .addGap(11, 11, 11)))
                 .addGap(43, 43, 43)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnCancelar)
