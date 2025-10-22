@@ -1,3 +1,2 @@
 C1,Alex,Masculino,08/06/2005
 C2,Hector,Masculino,08/04/2025
-C3,Pedro,Masculino,20/12/2000

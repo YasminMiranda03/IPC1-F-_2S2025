@@ -107,6 +107,55 @@ public class GestionClientesView extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Error actualizando el archivo de clientes.");
         }
     }
+    
+    private void eliminarCliente(){
+        int filaSeleccionada = tablaClientes.getSelectedRow();
+        if (filaSeleccionada == -1) {
+            JOptionPane.showMessageDialog(this, "Seleccione un cliente para eliminar.");
+            return;
+        }
+
+        String codigo = tablaClientes.getValueAt(filaSeleccionada, 0).toString();
+
+        int confirm = JOptionPane.showConfirmDialog(this,
+            "¿Está seguro de eliminar al cliente con código " + codigo + "?",
+            "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+
+        if (confirm != JOptionPane.YES_OPTION) return;
+
+        File archivo = new File("clientes.txt");
+        File temp = new File("clientes_temp.txt");
+
+        try (
+            BufferedReader reader = new BufferedReader(new FileReader(archivo));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(temp))
+        ) {
+            String linea;
+            while ((linea = reader.readLine()) != null) {
+                if (linea.trim().isEmpty()) continue;
+                String[] partes = linea.split(",", -1);
+                if (partes.length < 4) continue;
+
+                // si no es el cliente seleccionado, lo copiamos
+                if (!partes[0].equals(codigo)) {
+                    writer.write(linea);
+                    writer.newLine();
+                }
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Error eliminando cliente: " + e.getMessage());
+            return;
+        }
+
+        // Reemplazar archivo original
+        if (archivo.delete()) {
+            temp.renameTo(archivo);
+            JOptionPane.showMessageDialog(this, "Cliente eliminado correctamente.");
+            cargarClientesEnTabla();
+        } else {
+            JOptionPane.showMessageDialog(this, "Error actualizando el archivo de clientes.");
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -228,6 +277,7 @@ public class GestionClientesView extends javax.swing.JFrame {
 
     private void btnEliminarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarClienteActionPerformed
         // TODO add your handling code here:
+        eliminarCliente();
     }//GEN-LAST:event_btnEliminarClienteActionPerformed
 
     private void btnRegresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegresarActionPerformed
