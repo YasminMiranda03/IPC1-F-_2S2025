@@ -1,6 +1,1 @@
-P4,ñ,Tecnologia,
-P5,l,Tecnologia,
-P1,CARRO,General,acero
-P1,agua,Alimento,23/10/2025
-P1,Audifonos,Tecnologia,3
-P2,Ventilador,Tecnologia,1
+P1,Jabon,General,quimicos

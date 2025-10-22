@@ -88,9 +88,11 @@ public class RegistrarClienteView extends javax.swing.JFrame {
         txtCodigo = new javax.swing.JTextField();
         txtNombre = new javax.swing.JTextField();
         cmbGenero = new javax.swing.JComboBox<>();
-        txtContrasena = new javax.swing.JTextField();
+        txtfechaNacimiento = new javax.swing.JTextField();
         btnGuardar = new javax.swing.JButton();
         btnCancelar = new javax.swing.JButton();
+        jLabel6 = new javax.swing.JLabel();
+        txtContraseña = new javax.swing.JPasswordField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -117,7 +119,7 @@ public class RegistrarClienteView extends javax.swing.JFrame {
             }
         });
 
-        txtContrasena.setColumns(5);
+        txtfechaNacimiento.setColumns(5);
 
         btnGuardar.setText("Guardar");
         btnGuardar.addActionListener(new java.awt.event.ActionListener() {
@@ -133,6 +135,10 @@ public class RegistrarClienteView extends javax.swing.JFrame {
             }
         });
 
+        jLabel6.setText("Contraseña");
+
+        txtContraseña.setColumns(5);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -144,13 +150,12 @@ public class RegistrarClienteView extends javax.swing.JFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(68, 68, 68)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(jLabel6)
+                    .addComponent(btnGuardar)
                     .addComponent(jLabel5)
                     .addComponent(jLabel4)
                     .addComponent(jLabel3)
-                    .addComponent(jLabel2)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnGuardar)
-                        .addGap(11, 11, 11)))
+                    .addComponent(jLabel2))
                 .addGap(43, 43, 43)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnCancelar)
@@ -158,7 +163,8 @@ public class RegistrarClienteView extends javax.swing.JFrame {
                         .addComponent(txtCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(txtNombre, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(cmbGenero, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtContrasena, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtfechaNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(txtContraseña, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -181,12 +187,16 @@ public class RegistrarClienteView extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel5)
-                    .addComponent(txtContrasena, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(24, 24, 24)
+                    .addComponent(txtfechaNacimiento, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jLabel6)
+                    .addComponent(txtContraseña, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 13, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnGuardar)
                     .addComponent(btnCancelar))
-                .addContainerGap(35, Short.MAX_VALUE))
+                .addGap(49, 49, 49))
         );
 
         pack();
@@ -197,15 +207,16 @@ public class RegistrarClienteView extends javax.swing.JFrame {
         String codigo = txtCodigo.getText().trim();
         String nombre = txtNombre.getText().trim();
         String genero = (String) cmbGenero.getSelectedItem();
-        String contrasena = txtContrasena.getText().trim();
+        String fechaNacimiento = txtfechaNacimiento.getText().trim(); // este campo sirve para la fecha
+        String contrasena = new String(txtContraseña.getPassword()); // este es el password real
 
-        if (nombre.isEmpty() || contrasena.isEmpty()) {
+        if (nombre.isEmpty() || fechaNacimiento.isEmpty() || contrasena.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Debe llenar todos los campos obligatorios.");
             return;
         }
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(RUTA_CLIENTES, true))) {
-            writer.write(codigo + "," + nombre + "," + genero + "," + contrasena);
+            writer.write(codigo + "," + nombre + "," + genero + "," + fechaNacimiento + "," + contrasena);
             writer.newLine();
             JOptionPane.showMessageDialog(this, "Cliente registrado exitosamente.");
 
@@ -224,7 +235,8 @@ public class RegistrarClienteView extends javax.swing.JFrame {
 
     private void limpiarCampos() {
         txtNombre.setText("");
-        txtContrasena.setText("");
+        txtfechaNacimiento.setText("");
+        txtContraseña.setText("");
         cmbGenero.setSelectedIndex(0);
     }
     
@@ -274,8 +286,10 @@ public class RegistrarClienteView extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JTextField txtCodigo;
-    private javax.swing.JTextField txtContrasena;
+    private javax.swing.JPasswordField txtContraseña;
     private javax.swing.JTextField txtNombre;
+    private javax.swing.JTextField txtfechaNacimiento;
     // End of variables declaration//GEN-END:variables
 }

@@ -169,30 +169,31 @@ public class LoginView extends javax.swing.JFrame {
         }
         
         //login de cliente
-         boolean clienteEncontrado = false;
-    try (BufferedReader reader = new BufferedReader(new FileReader("clientes.txt"))) {
-        String linea;
-        while ((linea = reader.readLine()) != null) {
-            String[] datos = linea.split(",");
-            if (datos.length >= 4) {
-                String codigo = datos[0].trim();
-                String nombre = datos[1].trim();
-                String genero = datos[2].trim();
-                String contrasena = datos[3].trim();
+        boolean clienteEncontrado = false;
+        try (BufferedReader reader = new BufferedReader(new FileReader("clientes.txt"))) {
+            String linea;
+            while ((linea = reader.readLine()) != null) {
+                String[] datos = linea.split(",");
+                if (datos.length >= 5) {
+                    String codigo = datos[0].trim();
+                    String nombre = datos[1].trim();
+                    String genero = datos[2].trim();
+                    String fechaNacimiento = datos[3].trim();
+                    String contrasenaCliente = datos[4].trim();
 
-                if (usuarioTexto.equalsIgnoreCase(codigo) && contrasenaTexto.equals(contrasena)) {
-                    clienteEncontrado = true;
-                    JOptionPane.showMessageDialog(this, "Bienvenido, " + nombre + " (Cliente)", "Acceso correcto", JOptionPane.INFORMATION_MESSAGE);
-                    ClienteView cliente = new ClienteView();
-                    cliente.setVisible(true);
-                    this.dispose();
-                    return;
+                    if (usuarioTexto.equalsIgnoreCase(codigo) && contrasenaTexto.equals(contrasenaCliente)) {
+                        clienteEncontrado = true;
+                        JOptionPane.showMessageDialog(this, "Bienvenido, " + nombre + " (Cliente)", "Acceso correcto", JOptionPane.INFORMATION_MESSAGE);
+                        ClienteView cliente = new ClienteView();
+                        cliente.setVisible(true);
+                        this.dispose();
+                        return;
+                    }
                 }
             }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "No se encontró el archivo de clientes.\nPrimero debe registrar al menos un cliente.", "Error", JOptionPane.ERROR_MESSAGE);
         }
-    } catch (IOException e) {
-        JOptionPane.showMessageDialog(this, "No se encontró el archivo de clientes.\nPrimero debe registrar al menos un cliente.", "Error", JOptionPane.ERROR_MESSAGE);
-    }
 
         // Si no encontró vendedor ni cliente
         if (!vendedorEncontrado && !clienteEncontrado) {

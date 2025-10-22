@@ -12,13 +12,14 @@ import java.io.*;
  */
 public class ClienteControlador {
     private static final String RUTA_CLIENTES = "clientes.txt";
+    
     public static String buscarPorCodigo(String codigoBuscado){
         try (BufferedReader br = new BufferedReader (new FileReader(RUTA_CLIENTES))){
             String linea;
             while ((linea = br.readLine()) != null){
                 if (linea.trim().isEmpty()) continue;
                 String[] partes = linea.split(",", -1);
-                if (partes.length >= 4 && partes[0].equals(codigoBuscado)){
+                if (partes.length >= 5 && partes[0].equals(codigoBuscado)){
                     return linea;
                 }
             }
@@ -34,7 +35,7 @@ public class ClienteControlador {
             while ((linea = br.readLine()) != null){
                 if (linea.trim().isEmpty()) continue;
                 String[] partes = linea.split(",", -1);
-                if (partes.length >= 4 && partes[1].equalsIgnoreCase(nombreBuscado)){
+                if (partes.length >= 5 && partes[1].equalsIgnoreCase(nombreBuscado)){
                     return linea;
                 }
             }
@@ -70,7 +71,7 @@ public class ClienteControlador {
             while ((linea = br.readLine()) != null){
                 if(linea.trim().isEmpty()) continue;
                 String[] partes = linea.split(",", -1);
-                if (partes.length >= 4 && partes[0].equals(codigoEliminar)){
+                if (partes.length >= 5 && partes[0].equals(codigoEliminar)){
                     eliminado = true;
                     continue;
                 }
@@ -104,8 +105,8 @@ public class ClienteControlador {
                 if (linea.trim().isEmpty()) continue;
                 String[] partes = linea.split(",", -1);
 
-                if (partes.length >= 4 && partes[0].equals(codigo)) {
-                    bw.write(codigo + "," + nuevoNombre + "," + nuevoGenero + "," + nuevaContrasena);
+                if (partes.length >= 5 && partes[0].equals(codigo)) {
+                    bw.write(codigo + "," + nuevoNombre + "," + nuevoGenero + "," + nuevaFecha + "," + nuevaContrasena);
                     actualizado = true;
                 } else {
                     bw.write(linea);

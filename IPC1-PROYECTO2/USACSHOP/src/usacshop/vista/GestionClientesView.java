@@ -13,9 +13,11 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import usacshop.controlador.ClienteControlador;
+
 /**
  *
- * @author APROJUSA
+ * @author Katherin Yasmin
  */
 public class GestionClientesView extends javax.swing.JFrame {
     
@@ -43,8 +45,8 @@ public class GestionClientesView extends javax.swing.JFrame {
             while ((linea = reader.readLine()) != null) {
                 if (linea.trim().isEmpty()) continue;
                 String[] partes = linea.split(",", -1);
-                if (partes.length >= 4) {
-                    modelo.addRow(new Object[]{ partes[0], partes[1], partes[2], partes[3], "Ver" });
+                if (partes.length >= 5) {
+                    modelo.addRow(new Object[]{ partes[0], partes[1], partes[2], partes[3], partes[4] });
                 }
             }
         } catch (IOException e) {
@@ -54,7 +56,7 @@ public class GestionClientesView extends javax.swing.JFrame {
     
     private void modificarCliente(){    //para modificar a los clientes
         int filaSeleccionada = tablaClientes.getSelectedRow();
-        if (filaSeleccionada == -1) {
+        if (filaSeleccionada == -1){
             JOptionPane.showMessageDialog(this, "Seleccione un cliente para modificar.");
             return;
         }
@@ -63,6 +65,7 @@ public class GestionClientesView extends javax.swing.JFrame {
         String nombreActual = tablaClientes.getValueAt(filaSeleccionada, 1).toString();
         String generoActual = tablaClientes.getValueAt(filaSeleccionada, 2).toString();
         String fechaActual = tablaClientes.getValueAt(filaSeleccionada, 3).toString();
+        String contrasenaActual = tablaClientes.getValueAt(filaSeleccionada, 4).toString();
 
         String nuevoNombre = JOptionPane.showInputDialog(this, "Nuevo nombre:", nombreActual);
         if (nuevoNombre == null || nuevoNombre.trim().isEmpty()) return;
@@ -73,87 +76,36 @@ public class GestionClientesView extends javax.swing.JFrame {
         String nuevaFecha = JOptionPane.showInputDialog(this, "Nueva fecha de nacimiento:", fechaActual);
         if (nuevaFecha == null || nuevaFecha.trim().isEmpty()) return;
 
-        File archivo = new File("clientes.txt");
-        File temp = new File("clientes_temp.txt");
+        String nuevaContrasena = JOptionPane.showInputDialog(this, "Nueva contraseña:", contrasenaActual);
+        if (nuevaContrasena == null || nuevaContrasena.trim().isEmpty()) return;
 
-        try (
-            BufferedReader reader = new BufferedReader(new FileReader(archivo));
-            BufferedWriter writer = new BufferedWriter(new FileWriter(temp))
-        ) {
-            String linea;
-            while ((linea = reader.readLine()) != null) {
-                if (linea.trim().isEmpty()) continue;
-                String[] partes = linea.split(",", -1);
-                if (partes.length < 4) continue;
-
-                if (partes[0].equals(codigo)) {
-                    writer.write(codigo + "," + nuevoNombre + "," + nuevoGenero + "," + nuevaFecha);
-                } else {
-                    writer.write(linea);
-                }
-                writer.newLine();
-            }
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "Error modificando cliente: " + e.getMessage());
-            return;
-        }
-
-        // Reemplazar el archivo original
-        if (archivo.delete()) {
-            temp.renameTo(archivo);
+        boolean exito = ClienteControlador.actualizarCliente(codigo, nuevoNombre, nuevoGenero, nuevaFecha, nuevaContrasena);
+        if (exito){
             JOptionPane.showMessageDialog(this, "Cliente modificado correctamente.");
             cargarClientesEnTabla();
         } else {
-            JOptionPane.showMessageDialog(this, "Error actualizando el archivo de clientes.");
+            JOptionPane.showMessageDialog(this, "Error actualizando el cliente.");
         }
     }
     
     private void eliminarCliente(){
         int filaSeleccionada = tablaClientes.getSelectedRow();
-        if (filaSeleccionada == -1) {
+        if (filaSeleccionada == -1){
             JOptionPane.showMessageDialog(this, "Seleccione un cliente para eliminar.");
             return;
         }
 
         String codigo = tablaClientes.getValueAt(filaSeleccionada, 0).toString();
-
-        int confirm = JOptionPane.showConfirmDialog(this,
-            "¿Está seguro de eliminar al cliente con código " + codigo + "?",
-            "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+        int confirm = JOptionPane.showConfirmDialog(this, "¿Está seguro de eliminar al cliente con código " + codigo + "?", "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
 
         if (confirm != JOptionPane.YES_OPTION) return;
 
-        File archivo = new File("clientes.txt");
-        File temp = new File("clientes_temp.txt");
-
-        try (
-            BufferedReader reader = new BufferedReader(new FileReader(archivo));
-            BufferedWriter writer = new BufferedWriter(new FileWriter(temp))
-        ) {
-            String linea;
-            while ((linea = reader.readLine()) != null) {
-                if (linea.trim().isEmpty()) continue;
-                String[] partes = linea.split(",", -1);
-                if (partes.length < 4) continue;
-
-                // si no es el cliente seleccionado, lo copiamos
-                if (!partes[0].equals(codigo)) {
-                    writer.write(linea);
-                    writer.newLine();
-                }
-            }
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "Error eliminando cliente: " + e.getMessage());
-            return;
-        }
-
-        // Reemplazar archivo original
-        if (archivo.delete()) {
-            temp.renameTo(archivo);
+        boolean exito = ClienteControlador.eliminarCliente(codigo);
+        if (exito){
             JOptionPane.showMessageDialog(this, "Cliente eliminado correctamente.");
             cargarClientesEnTabla();
         } else {
-            JOptionPane.showMessageDialog(this, "Error actualizando el archivo de clientes.");
+            JOptionPane.showMessageDialog(this, "Error eliminando el cliente.");
         }
     }
 
