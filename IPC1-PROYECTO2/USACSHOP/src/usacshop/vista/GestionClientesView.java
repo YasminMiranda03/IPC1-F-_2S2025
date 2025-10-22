@@ -51,6 +51,62 @@ public class GestionClientesView extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Error al cargar los clientes: " + e.getMessage());
         }
     }
+    
+    private void modificarCliente(){    //para modificar a los clientes
+        int filaSeleccionada = tablaClientes.getSelectedRow();
+        if (filaSeleccionada == -1) {
+            JOptionPane.showMessageDialog(this, "Seleccione un cliente para modificar.");
+            return;
+        }
+
+        String codigo = tablaClientes.getValueAt(filaSeleccionada, 0).toString();
+        String nombreActual = tablaClientes.getValueAt(filaSeleccionada, 1).toString();
+        String generoActual = tablaClientes.getValueAt(filaSeleccionada, 2).toString();
+        String fechaActual = tablaClientes.getValueAt(filaSeleccionada, 3).toString();
+
+        String nuevoNombre = JOptionPane.showInputDialog(this, "Nuevo nombre:", nombreActual);
+        if (nuevoNombre == null || nuevoNombre.trim().isEmpty()) return;
+
+        String nuevoGenero = JOptionPane.showInputDialog(this, "Nuevo género (Femenino/Masculino):", generoActual);
+        if (nuevoGenero == null || nuevoGenero.trim().isEmpty()) return;
+
+        String nuevaFecha = JOptionPane.showInputDialog(this, "Nueva fecha de nacimiento:", fechaActual);
+        if (nuevaFecha == null || nuevaFecha.trim().isEmpty()) return;
+
+        File archivo = new File("clientes.txt");
+        File temp = new File("clientes_temp.txt");
+
+        try (
+            BufferedReader reader = new BufferedReader(new FileReader(archivo));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(temp))
+        ) {
+            String linea;
+            while ((linea = reader.readLine()) != null) {
+                if (linea.trim().isEmpty()) continue;
+                String[] partes = linea.split(",", -1);
+                if (partes.length < 4) continue;
+
+                if (partes[0].equals(codigo)) {
+                    writer.write(codigo + "," + nuevoNombre + "," + nuevoGenero + "," + nuevaFecha);
+                } else {
+                    writer.write(linea);
+                }
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Error modificando cliente: " + e.getMessage());
+            return;
+        }
+
+        // Reemplazar el archivo original
+        if (archivo.delete()) {
+            temp.renameTo(archivo);
+            JOptionPane.showMessageDialog(this, "Cliente modificado correctamente.");
+            cargarClientesEnTabla();
+        } else {
+            JOptionPane.showMessageDialog(this, "Error actualizando el archivo de clientes.");
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -167,6 +223,7 @@ public class GestionClientesView extends javax.swing.JFrame {
 
     private void btnModificarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarClienteActionPerformed
         // TODO add your handling code here:
+        modificarCliente();
     }//GEN-LAST:event_btnModificarClienteActionPerformed
 
     private void btnEliminarClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarClienteActionPerformed
