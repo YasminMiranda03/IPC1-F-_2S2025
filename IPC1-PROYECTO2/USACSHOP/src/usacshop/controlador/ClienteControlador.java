@@ -93,7 +93,7 @@ public class ClienteControlador {
         return eliminado;
     }
     
-    public static boolean actualizarCliente(String codigo, String nuevoNombre, String nuevoGenero, String nuevaContrasena){
+    public static boolean actualizarCliente(String codigo, String nuevoNombre, String nuevoGenero, String nuevaFecha, String nuevaContrasena){
         File archivo = new File(RUTA_CLIENTES);
         File temp = new File("clientes_temp.txt");
         boolean actualizado = false;
