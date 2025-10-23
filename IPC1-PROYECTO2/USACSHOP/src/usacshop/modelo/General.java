@@ -8,12 +8,16 @@ package usacshop.modelo;
  *
  * @author Katherin Yasmin
  */
-public class ProductoGeneral extends Producto {
+public class General extends Producto{
     private String material;
 
-    public ProductoGeneral(String codigo, String nombre, String material) {
-        super(codigo, nombre, "General");
+    public General(String codigo, String nombre, String categoria, String material) {
+        super(codigo, nombre, categoria);
         this.material = material;
+    }
+
+    public String getMaterial() {
+        return material;
     }
 
     @Override

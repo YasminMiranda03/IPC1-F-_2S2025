@@ -1,3 +1,5 @@
 P1,Calculadora,Tecnologia,3
 P2,Telefono,Tecnologia,1
 P4,lampara,Tecnologia,2
+P5,Pizza,Alimento,24/10/2025
+P6,Microondas,Tecnologia,4

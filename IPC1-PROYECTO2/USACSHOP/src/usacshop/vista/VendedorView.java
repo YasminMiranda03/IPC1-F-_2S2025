@@ -5,12 +5,17 @@
 package usacshop.vista;
 
 import usacshop.vista.RegistrarClienteView;
-import usacshop.modelo.Cliente;
+import usacshop.controlador.VendedorControlador;
+import usacshop.modelo.Producto;
+import usacshop.modelo.Alimento;
+import usacshop.modelo.Tecnologia;
+import usacshop.modelo.General;
 
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 import java.io.BufferedReader;      //para leer los archivos txt
 import java.io.BufferedWriter;
+import java.io.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -28,8 +33,9 @@ public class VendedorView extends javax.swing.JFrame {
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(VendedorView.class.getName());
 
     DefaultTableModel modeloProductos;
-    double totalVenta = 0.0;
+    private VendedorControlador controlador;
     private int contadorProductos = 1;
+    private Producto[] productos = new Producto[100];
     /**
      * Creates new form VendedorView
      */
@@ -42,11 +48,12 @@ public class VendedorView extends javax.swing.JFrame {
         modeloProductos = new DefaultTableModel();
         modeloProductos.addColumn("Codigo");
         modeloProductos.addColumn("Nombre");
-        modeloProductos.addColumn("Precio");
-        modeloProductos.addColumn("Cantidad");
+        modeloProductos.addColumn("Categoria");
+        modeloProductos.addColumn("Detalle");
+        modeloProductos.addColumn("Stock");
         
         tablaProductosVenta.setModel(modeloProductos);  //modelo
-        
+        cargarProductos();
     }
 
     /**
@@ -67,6 +74,9 @@ public class VendedorView extends javax.swing.JFrame {
         jLabel2 = new javax.swing.JLabel();
         txtTotal = new javax.swing.JTextField();
         btnRegistrarCliente = new javax.swing.JButton();
+        btnAgregarStock = new javax.swing.JButton();
+        btnCargarStockCSV = new javax.swing.JButton();
+        btnVerHistorialStock = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -111,50 +121,90 @@ public class VendedorView extends javax.swing.JFrame {
             }
         });
 
+        btnAgregarStock.setText("Agregar Stock");
+        btnAgregarStock.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAgregarStockActionPerformed(evt);
+            }
+        });
+
+        btnCargarStockCSV.setText("Cargar");
+        btnCargarStockCSV.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCargarStockCSVActionPerformed(evt);
+            }
+        });
+
+        btnVerHistorialStock.setText("Historial Stock");
+        btnVerHistorialStock.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnVerHistorialStockActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(28, 28, 28)
-                                .addComponent(btnRegistrarVenta))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(48, 48, 48)
-                                .addComponent(jLabel2)))
+                        .addGap(28, 28, 28)
+                        .addComponent(btnRegistrarVenta))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(48, 48, 48)
+                        .addComponent(jLabel2)))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(txtTotal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(btnRegistrarCliente)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnCerrarSesion)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(146, 146, 146)
+                        .addComponent(jLabel1)))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnAgregarStock)
+                        .addGap(15, 15, 15))
+                    .addGroup(layout.createSequentialGroup()
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(txtTotal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(btnRegistrarCliente)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(btnCerrarSesion)))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addGap(146, 146, 146)
-                .addComponent(jLabel1)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addComponent(btnCargarStockCSV)
+                                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(btnVerHistorialStock)
+                                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addGap(0, 0, Short.MAX_VALUE))))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(18, 18, 18)
-                .addComponent(jLabel1)
-                .addGap(72, 72, 72)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(36, 36, 36)
-                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addComponent(jLabel1)
+                        .addGap(72, 72, 72)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(37, 37, 37)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(38, 38, 38)
+                        .addComponent(btnAgregarStock)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnCargarStockCSV)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnVerHistorialStock)))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnRegistrarVenta)
@@ -198,6 +248,90 @@ public class VendedorView extends javax.swing.JFrame {
         int nuevoNumero = ultimoNumero + 1;
         return String.format("P%03d", nuevoNumero);
     }
+    
+    
+
+    public void setControlador(VendedorControlador controlador) {
+        this.controlador = controlador;
+    }
+    
+    public void limpiarTablaProductos() {
+        DefaultTableModel modelo = (DefaultTableModel) tablaProductosVenta.getModel();
+        modelo.setRowCount(0);
+    }
+
+    public void agregarProductoATabla(Producto p, String stock) {
+        DefaultTableModel modelo = (DefaultTableModel) tablaProductosVenta.getModel();
+        modelo.addRow(new Object[]{
+            p.getCodigo(),
+            p.getNombre(),
+            p.getCategoria(),
+            p.getDetalle(),
+            stock     
+        });
+    }
+    private void mostrarProductosEnTabla() {
+        DefaultTableModel modelo = (DefaultTableModel) tablaProductosVenta.getModel();
+        modelo.setRowCount(0); // limpiar tabla
+
+            for (int i = 0; i < contadorProductos; i++) {
+            Producto p = productos[i];
+            if (p != null) { //evita el null pointer
+                Object[] fila = {
+                    p.getCodigo(),
+                    p.getNombre(),
+                    p.getCategoria(),
+                    p.getDetalle()
+                };
+                modelo.addRow(fila);
+            }
+        }
+    }
+    
+    // Método para cargar productos desde productos.txt
+    private void cargarProductos() {
+        File archivo = new File("productos.txt");
+        if (!archivo.exists()) return;
+
+        try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                String[] datos = linea.split(",");
+
+                if (datos.length < 4) continue; // línea incompleta, se salta
+
+                String codigo = datos[0].trim();
+                String nombre = datos[1].trim();
+                String categoria = datos[2].trim();
+                String detalle = datos[3].trim();
+
+                Producto p = null;
+
+                switch (categoria.toLowerCase()) {
+                    case "alimento":
+                        p = new Alimento(codigo, nombre, categoria, detalle);
+                        break;
+                    case "tecnologia":
+                        p = new Tecnologia(codigo, nombre, categoria, detalle);
+                        break;
+                    case "general":
+                        p = new General(codigo, nombre, categoria, detalle);
+                        break;
+                    default:
+                        continue; // categoría desconocida → se ignora la línea
+                }
+
+                if (contadorProductos < productos.length && p != null) {
+                    productos[contadorProductos++] = p;
+                }
+            }
+
+            mostrarProductosEnTabla(); // ✅ se muestran al final
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Error al cargar productos: " + e.getMessage());
+        }
+    }
+    
     private void btnRegistrarVentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarVentaActionPerformed
         // TODO add your handling code here:
         int filaSeleccionada = tablaProductosVenta.getSelectedRow();
@@ -238,9 +372,7 @@ public class VendedorView extends javax.swing.JFrame {
                     registrarVenta(codigo, nombre, cantidadVenta, precio, subtotal);
 
                     // Actualizar total
-                    totalVenta += subtotal;
-                    txtTotal.setText(String.valueOf(totalVenta));
-
+                    
                     JOptionPane.showMessageDialog(this,
                         "Venta registrada de " + cantidadVenta + " " + nombre + "(s)\nSubtotal: Q" + subtotal);
                 } else {
@@ -306,6 +438,40 @@ public class VendedorView extends javax.swing.JFrame {
         this.dispose();
     }//GEN-LAST:event_btnRegistrarClienteActionPerformed
 
+    private void btnAgregarStockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarStockActionPerformed
+        // TODO add your handling code here:
+        String codigo = JOptionPane.showInputDialog(this, "Ingrese código del producto:");
+        if (codigo == null || codigo.trim().isEmpty()) return;
+
+        String cantidadStr = JOptionPane.showInputDialog(this, "Ingrese cantidad a registrar:");
+        if (cantidadStr == null || cantidadStr.trim().isEmpty()) return;
+
+        try {
+            int cantidad = Integer.parseInt(cantidadStr);
+            String usuario = "Vendedor1"; // aquí puedes usar usuario logueado
+            controlador.registrarIngresoStock(codigo, cantidad, usuario);
+            controlador.actualizarTabla(); // recargar tabla después de actualizar stock
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(this, "Cantidad inválida");
+        }
+    }//GEN-LAST:event_btnAgregarStockActionPerformed
+
+    private void btnCargarStockCSVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCargarStockCSVActionPerformed
+        // TODO add your handling code here:
+        JFileChooser fc = new JFileChooser();
+        int seleccion = fc.showOpenDialog(this);
+        if (seleccion == JFileChooser.APPROVE_OPTION) {
+            File archivo = fc.getSelectedFile();
+            controlador.cargarStockCSV(archivo, "Vendedor1");
+            controlador.actualizarTabla();
+        }
+    }//GEN-LAST:event_btnCargarStockCSVActionPerformed
+
+    private void btnVerHistorialStockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVerHistorialStockActionPerformed
+        // TODO add your handling code here:
+        controlador.verHistorial();
+    }//GEN-LAST:event_btnVerHistorialStockActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -332,9 +498,12 @@ public class VendedorView extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnAgregarStock;
+    private javax.swing.JButton btnCargarStockCSV;
     private javax.swing.JButton btnCerrarSesion;
     private javax.swing.JButton btnRegistrarCliente;
     private javax.swing.JButton btnRegistrarVenta;
+    private javax.swing.JButton btnVerHistorialStock;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane1;

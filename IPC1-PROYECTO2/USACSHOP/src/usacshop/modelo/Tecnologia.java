@@ -8,13 +8,15 @@ package usacshop.modelo;
  *
  * @author Katherin Yasmin
  */
-public class ProductoTecnologia extends Producto {
-    private int mesesGarantia;
+public class Tecnologia extends Producto {
+    private String mesesGarantia;
 
-    public ProductoTecnologia(String codigo, String nombre, int mesesGarantia) {
-        super(codigo, nombre, "Tecnología");
+    public Tecnologia(String codigo, String nombre, String categoria, String mesesGarantia) {
+        super(codigo, nombre, categoria);
         this.mesesGarantia = mesesGarantia;
     }
+
+   
 
     @Override
     public String getDetalle() {
