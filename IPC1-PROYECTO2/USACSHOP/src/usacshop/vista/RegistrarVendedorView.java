@@ -194,17 +194,38 @@ public class RegistrarVendedorView extends javax.swing.JFrame {
         String nombre = txtNombre.getText().trim();
         String genero = cmbGenero.getSelectedItem().toString();
         String contrasena = txtContrasena.getText().trim();
-        
+
         if(nombre.isEmpty() || contrasena.isEmpty()){
             JOptionPane.showMessageDialog(this, "Debe llenar todos los campos");
             return;
         }
-        
+
+        // Validar que el código no exista
+        boolean codigoExiste = false;
+        try (BufferedReader reader = new BufferedReader(new FileReader("vendedores.txt"))){
+            String linea;
+            while ((linea = reader.readLine()) != null){
+                String[] datos = linea.split(",");
+                if(datos.length > 0 && datos[0].trim().equalsIgnoreCase(codigo)){
+                    codigoExiste = true;
+                    break;
+                }
+            }
+        } catch(IOException e){
+            JOptionPane.showMessageDialog(this, "Error al leer el archivo: " + e.getMessage());
+            return;
+        }
+
+        if(codigoExiste){
+            JOptionPane.showMessageDialog(this, "El código ya existe. Intente nuevamente.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Si es único, guardar el vendedor
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("vendedores.txt", true))){
             writer.write(codigo + "," + nombre + "," + genero + "," + contrasena);
             writer.newLine();
             JOptionPane.showMessageDialog(this, "Vendedor registrado exitosamente.");
-
             limpiarCampos();
             generarCodigoAutomatico();
         } catch(IOException e){

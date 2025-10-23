@@ -43,4 +43,23 @@ public class VendedorControlador {
         return null;
     }
     
+    public boolean esCodigoUnico(String codigo) {
+    try (BufferedReader reader = new BufferedReader(new FileReader("vendedores.txt"))) {
+        String linea;
+        while ((linea = reader.readLine()) != null) {
+            String[] datos = linea.split(",");
+            if (datos.length >= 1) {
+                String codigoExistente = datos[0].trim();
+                if (codigo.equalsIgnoreCase(codigoExistente)) {
+                    return false; // Código ya existe
+                }
+            }
+        }
+    } catch (IOException e) {
+        // Si no existe el archivo, consideramos que el código es único
+        return true;
+    }
+    return true; // Código no encontrado, es único
+}
+    
 }

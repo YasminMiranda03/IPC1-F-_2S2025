@@ -110,6 +110,8 @@ public class VendedoresView extends javax.swing.JFrame {
         btnModificar = new javax.swing.JButton();
         btnEliminar = new javax.swing.JButton();
         btnRegresar = new javax.swing.JButton();
+        btnBuscar = new javax.swing.JButton();
+        btnCargarCSV = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Gestion de Vendedores");
@@ -158,26 +160,48 @@ public class VendedoresView extends javax.swing.JFrame {
             }
         });
 
+        btnBuscar.setText("Buscar");
+        btnBuscar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBuscarActionPerformed(evt);
+            }
+        });
+
+        btnCargarCSV.setText("Cargar");
+        btnCargarCSV.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCargarCSVActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
+                .addGap(29, 29, 29)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(29, 29, 29)
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 375, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(0, 0, Short.MAX_VALUE)
+                                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(btnCargarCSV)
+                                .addGap(0, 0, Short.MAX_VALUE))))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(29, 29, 29)
                         .addComponent(btnAgregar)
-                        .addGap(18, 18, 18)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnModificar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnEliminar)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnRegresar)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 61, Short.MAX_VALUE)
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnBuscar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnRegresar)
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
             .addGroup(layout.createSequentialGroup()
                 .addGap(132, 132, 132)
@@ -191,13 +215,17 @@ public class VendedoresView extends javax.swing.JFrame {
                 .addComponent(jLabel1)
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(jScrollPane2)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnCargarCSV))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 275, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAgregar)
                     .addComponent(btnModificar)
                     .addComponent(btnEliminar)
+                    .addComponent(btnBuscar)
                     .addComponent(btnRegresar))
                 .addContainerGap(24, Short.MAX_VALUE))
         );
@@ -211,7 +239,23 @@ public class VendedoresView extends javax.swing.JFrame {
         String nombre = JOptionPane.showInputDialog("Ingrese el nombre del vendedor");
         String genero = JOptionPane.showInputDialog("Ingrese genero del vendedor");
         
-        if (nombre != null && genero != null){
+        if (nombre != null && genero != null) {
+        // Validar que el código no exista ya en la tabla
+            boolean codigoExiste = false;
+            for (int i = 0; i < modelo.getRowCount(); i++) {
+                if (modelo.getValueAt(i, 0).toString().equalsIgnoreCase(codigo)) {
+                    codigoExiste = true;
+                    break;
+                }
+            }
+
+            if (codigoExiste) {
+                JOptionPane.showMessageDialog(this, "El código ya existe. Intente nuevamente.", "Error", JOptionPane.ERROR_MESSAGE);
+                contadorVendedores--; // devolver el contador para no saltarse un número
+                return; // salir del método
+            }
+
+            // Si es único, agregar a la tabla
             modelo.addRow(new Object[]{codigo, nombre, genero, "0"});
             guardarVendedores();
         }
@@ -219,13 +263,33 @@ public class VendedoresView extends javax.swing.JFrame {
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
         // TODO add your handling code here:
-        int filaSeleccionada = tablaVendedores.getSelectedRow();
-        
-        if (filaSeleccionada >= 0){
-            modelo.removeRow(filaSeleccionada);
-            guardarVendedores();
-        } else {
-            JOptionPane.showMessageDialog(this, "Seleccione una fila para eliminar");
+        String codigoEliminar = JOptionPane.showInputDialog(this, "Ingrese el código del vendedor a eliminar:");
+        if (codigoEliminar == null || codigoEliminar.trim().isEmpty()) {
+            return; // Si el usuario canceló o no ingresó nada
+        }
+
+        boolean encontrado = false;
+
+        for (int i = 0; i < modelo.getRowCount(); i++) {
+            String codigo = modelo.getValueAt(i, 0).toString();
+            if (codigo.equalsIgnoreCase(codigoEliminar.trim())) {
+                encontrado = true;
+
+                int confirm = JOptionPane.showConfirmDialog(this,
+                        "¿Está seguro de eliminar al vendedor " + modelo.getValueAt(i, 1) + "?",
+                        "Confirmar eliminación", JOptionPane.YES_NO_OPTION);
+
+                if (confirm == JOptionPane.YES_OPTION) {
+                    modelo.removeRow(i);
+                    guardarVendedores();
+                    JOptionPane.showMessageDialog(this, "Vendedor eliminado correctamente.");
+                }
+                break;
+            }
+        }
+
+        if (!encontrado) {
+            JOptionPane.showMessageDialog(this, "No se encontró un vendedor con ese código.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnEliminarActionPerformed
 
@@ -238,28 +302,120 @@ public class VendedoresView extends javax.swing.JFrame {
 
     private void btnModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarActionPerformed
         // TODO add your handling code here:
-        int filaSeleccionada = tablaVendedores.getSelectedRow();
+        // Pedir el código del vendedor a modificar
+    String codigoBuscar = JOptionPane.showInputDialog(this, "Ingrese el código del vendedor a modificar:");
+    if (codigoBuscar == null || codigoBuscar.trim().isEmpty()) {
+        return; // Si canceló o no escribió nada
+    }
+    
+    boolean encontrado = false;
+    
+    for (int i = 0; i < modelo.getRowCount(); i++) {
+        String codigo = modelo.getValueAt(i, 0).toString();
+            if (codigo.equalsIgnoreCase(codigoBuscar.trim())) {
+                encontrado = true;
 
-        if (filaSeleccionada >= 0) {
-            
-            String nombre = (String) modelo.getValueAt(filaSeleccionada, 1);
-            String genero = (String) modelo.getValueAt(filaSeleccionada, 2);
-            
-            
-            String nuevoNombre = JOptionPane.showInputDialog(this, "Nuevo nombre:", nombre);
-            String nuevoGenero = JOptionPane.showInputDialog(this, "Nuevo genero:", genero);
-            
-            if (nuevoNombre != null && nuevoGenero != null) {
-                
-                modelo.setValueAt(nuevoNombre, filaSeleccionada, 1);
-                modelo.setValueAt(nuevoGenero, filaSeleccionada, 2);
-                guardarVendedores();
+                String nombreActual = modelo.getValueAt(i, 1).toString();
+                String contrasenaActual = modelo.getValueAt(i, 3).toString();
+
+                String nuevoNombre = JOptionPane.showInputDialog(this, "Nuevo nombre:", nombreActual);
+                String nuevaContrasena = JOptionPane.showInputDialog(this, "Nueva contraseña:", contrasenaActual);
+
+                if (nuevoNombre != null && nuevaContrasena != null &&
+                    !nuevoNombre.trim().isEmpty() && !nuevaContrasena.trim().isEmpty()) {
+
+                    modelo.setValueAt(nuevoNombre.trim(), i, 1);
+                    modelo.setValueAt(nuevaContrasena.trim(), i, 3);
+
+                    guardarVendedores();
+                    JOptionPane.showMessageDialog(this, "Vendedor modificado exitosamente.");
+                } else {
+                    JOptionPane.showMessageDialog(this, "No se ingresaron valores válidos.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+
+                break; // Salimos del bucle al encontrarlo
             }
+        }
 
-        } else {
-            JOptionPane.showMessageDialog(this, "Seleccione una fila para modificar");
+        if (!encontrado) {
+            JOptionPane.showMessageDialog(this, "No se encontró un vendedor con ese código.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnModificarActionPerformed
+
+    private void btnBuscarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarActionPerformed
+        // TODO add your handling code here:
+        String codigoBuscar = JOptionPane.showInputDialog(this, "Ingrese el código del vendedor a buscar:");
+        if (codigoBuscar == null || codigoBuscar.trim().isEmpty()) {
+            return; // Usuario canceló o no escribió nada
+        }
+
+        boolean encontrado = false;
+
+        for (int i = 0; i < modelo.getRowCount(); i++) {
+            String codigo = modelo.getValueAt(i, 0).toString();
+            if (codigo.equalsIgnoreCase(codigoBuscar.trim())) {
+                encontrado = true;
+
+                String nombre = modelo.getValueAt(i, 1).toString();
+                String genero = modelo.getValueAt(i, 2).toString();
+                String contrasena = modelo.getValueAt(i, 3).toString();
+                String ventas = modelo.getValueAt(i, 4).toString();
+
+                JOptionPane.showMessageDialog(this,
+                        "Código: " + codigo +
+                        "\nNombre: " + nombre +
+                        "\nGénero: " + genero +
+                        "\nContraseña: " + contrasena +
+                        "\nVentas: " + ventas,
+                        "Vendedor encontrado",
+                        JOptionPane.INFORMATION_MESSAGE);
+                break;
+            }
+        }
+
+        if (!encontrado) {
+            JOptionPane.showMessageDialog(this, "No se encontró un vendedor con ese código.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_btnBuscarActionPerformed
+
+    private void btnCargarCSVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCargarCSVActionPerformed
+        // TODO add your handling code here:
+        JFileChooser fileChooser = new JFileChooser();
+    int seleccion = fileChooser.showOpenDialog(this);
+
+    if (seleccion == JFileChooser.APPROVE_OPTION) {
+        File archivoCSV = fileChooser.getSelectedFile();
+
+        try (BufferedReader br = new BufferedReader(new FileReader(archivoCSV))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                String[] datos = linea.split(",");
+                if (datos.length >= 4) {
+                    String codigo = datos[0].trim();
+                    String nombre = datos[1].trim();
+                    String genero = datos[2].trim();
+                    String contrasena = datos[3].trim();
+
+                    // Validar que el código sea único
+                    boolean existe = false;
+                    for (int i = 0; i < modelo.getRowCount(); i++) {
+                        if (modelo.getValueAt(i, 0).toString().equalsIgnoreCase(codigo)) {
+                            existe = true;
+                            break;
+                        }
+                    }
+                    if (!existe) {
+                        modelo.addRow(new Object[]{codigo, nombre, genero, contrasena, "0"});
+                    }
+                }
+            }
+            guardarVendedores(); // guarda todo en vendedores.txt
+            JOptionPane.showMessageDialog(this, "CSV cargado exitosamente.");
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Error al cargar CSV: " + e.getMessage());
+        }
+    }
+    }//GEN-LAST:event_btnCargarCSVActionPerformed
 
     /**
      * @param args the command line arguments
@@ -288,6 +444,8 @@ public class VendedoresView extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAgregar;
+    private javax.swing.JButton btnBuscar;
+    private javax.swing.JButton btnCargarCSV;
     private javax.swing.JButton btnEliminar;
     private javax.swing.JButton btnModificar;
     private javax.swing.JButton btnRegresar;

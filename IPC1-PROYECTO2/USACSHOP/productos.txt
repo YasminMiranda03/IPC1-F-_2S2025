@@ -1,1 +1,3 @@
-P1,Jabon,General,quimicos
+P1,Calculadora,Tecnologia,3
+P2,Telefono,Tecnologia,1
+P4,lampara,Tecnologia,2

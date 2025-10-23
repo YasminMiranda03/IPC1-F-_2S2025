@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import javax.swing.JFileChooser;
 /**
  *
  * @author Katherin Yasmin
@@ -38,7 +39,8 @@ public class ProductosView extends javax.swing.JFrame {
         
         tablaProductos.setModel(modelo);
         cargarProductos();      //cargar productos desde el archivo
-    
+        inicializarContador();
+        
         tablaProductos.addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -135,7 +137,61 @@ public class ProductosView extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Error al actualizar el producto: " + e.getMessage());
         }
     }
+    
+    //para validar si ya existe el codigo actual
+    private boolean codigoExiste(String codigo) {
+        File archivo = new File("productos.txt");
+        if (!archivo.exists()) return false;
 
+        try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                String[] datos = linea.split(",", 4);
+                if (datos[0].equals(codigo)) {
+                    return true; // Código ya existe
+                }
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Error al leer archivo: " + e.getMessage());
+        }
+        return false;
+    }
+
+    // Método para buscar fila en la tabla por código
+    private int buscarFilaPorCodigo(String codigo) {
+        for (int i = 0; i < modelo.getRowCount(); i++) {
+            if (modelo.getValueAt(i, 0).toString().equals(codigo)) {
+                return i;
+            }
+        }
+        return -1; // No encontrado
+    }
+    
+    private void inicializarContador() {
+        int max = 0;
+        File archivo = new File("productos.txt");
+        if (archivo.exists()) {
+            try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
+                String linea;
+                while ((linea = br.readLine()) != null) {
+                    String[] datos = linea.split(",", 4);
+                    if (datos.length > 0 && datos[0].startsWith("P")) {
+                        try {
+                            int num = Integer.parseInt(datos[0].substring(1));
+                            if (num > max) max = num;
+                        } catch (NumberFormatException e) {
+                            // ignorar códigos no válidos
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(this, "Error al leer productos: " + e.getMessage());
+            }
+        }
+        contadorProductos = max + 1;
+    }
+
+    
     
    
 
@@ -156,6 +212,7 @@ public class ProductosView extends javax.swing.JFrame {
         btnModificar = new javax.swing.JButton();
         btnEliminar = new javax.swing.JButton();
         btnRegresar = new javax.swing.JButton();
+        btnCargarCSV = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Gestion de productos");
@@ -204,6 +261,13 @@ public class ProductosView extends javax.swing.JFrame {
             }
         });
 
+        btnCargarCSV.setText("Cargar");
+        btnCargarCSV.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnCargarCSVActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -230,6 +294,8 @@ public class ProductosView extends javax.swing.JFrame {
                         .addComponent(btnEliminar)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnRegresar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnCargarCSV)
                         .addGap(0, 0, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
@@ -248,7 +314,8 @@ public class ProductosView extends javax.swing.JFrame {
                     .addComponent(btnAgregar)
                     .addComponent(btnModificar)
                     .addComponent(btnEliminar)
-                    .addComponent(btnRegresar))
+                    .addComponent(btnRegresar)
+                    .addComponent(btnCargarCSV))
                 .addContainerGap(9, Short.MAX_VALUE))
         );
 
@@ -286,11 +353,40 @@ public class ProductosView extends javax.swing.JFrame {
 
     private void btnEliminarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarActionPerformed
         // TODO add your handling code here:
-        int filaSeleccionada = tablaProductos.getSelectedRow();
-        if (filaSeleccionada >= 0) {
-            modelo.removeRow(filaSeleccionada);
+        String codigo = JOptionPane.showInputDialog(this, "Ingrese el código del producto a eliminar:");
+        if (codigo == null || codigo.trim().isEmpty()) return;
+
+        int fila = buscarFilaPorCodigo(codigo);
+        if (fila >= 0) {
+            modelo.removeRow(fila);
+
+            // Actualizar archivo completo
+            File archivo = new File("productos.txt");
+            if (archivo.exists()) {
+                try {
+                    BufferedReader br = new BufferedReader(new FileReader(archivo));
+                    StringBuilder sb = new StringBuilder();
+                    String linea;
+                    while ((linea = br.readLine()) != null) {
+                        String[] datos = linea.split(",", 4);
+                        if (!datos[0].equals(codigo)) {
+                            sb.append(linea).append("\n");
+                        }
+                    }
+                    br.close();
+
+                    BufferedWriter bw = new BufferedWriter(new FileWriter(archivo));
+                    bw.write(sb.toString());
+                    bw.close();
+
+                } catch (IOException e) {
+                    JOptionPane.showMessageDialog(this, "Error al actualizar archivo: " + e.getMessage());
+                }
+            }
+
+            JOptionPane.showMessageDialog(this, "Producto eliminado.");
         } else {
-            JOptionPane.showMessageDialog(this, "Seleccione una fila para eliminar");
+            JOptionPane.showMessageDialog(this, "No se encontró el producto con ese código.");
         }
     }//GEN-LAST:event_btnEliminarActionPerformed
 
@@ -303,27 +399,27 @@ public class ProductosView extends javax.swing.JFrame {
 
     private void btnModificarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnModificarActionPerformed
         // TODO add your handling code here:
-        int filaSeleccionada = tablaProductos.getSelectedRow();
+        String codigo = JOptionPane.showInputDialog(this, "Ingrese el código del producto a modificar:");
+        if (codigo == null || codigo.trim().isEmpty()) return;
 
-        if (filaSeleccionada >= -1) {
-            if (filaSeleccionada == -1) {
-            JOptionPane.showMessageDialog(this, "Seleccione un producto para modificar");
+        int fila = buscarFilaPorCodigo(codigo);
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(this, "No se encontró el producto con ese código.");
             return;
         }
 
         // Obtener datos actuales
-        String codigo = modelo.getValueAt(filaSeleccionada, 0).toString();
-        String nombreActual = modelo.getValueAt(filaSeleccionada, 1).toString();
-        String categoriaActual = modelo.getValueAt(filaSeleccionada, 2).toString();
+        String nombreActual = modelo.getValueAt(fila, 1).toString();
+        String categoriaActual = modelo.getValueAt(fila, 2).toString();
         String detalleActual = "";
 
-        // Buscar el detalle en el archivo
+        // Leer detalle del archivo
         try (BufferedReader br = new BufferedReader(new FileReader("productos.txt"))) {
             String linea;
             while ((linea = br.readLine()) != null) {
                 String[] datos = linea.split(",", 4);
-                if (datos[0].equals(codigo)) {
-                    if (datos.length >= 4) detalleActual = datos[3];
+                if (datos[0].equals(codigo) && datos.length >= 4) {
+                    detalleActual = datos[3];
                     break;
                 }
             }
@@ -336,9 +432,8 @@ public class ProductosView extends javax.swing.JFrame {
         if (nuevoNombre == null || nuevoNombre.trim().isEmpty()) return;
 
         String[] categorias = {"Tecnologia", "Alimento", "General"};
-        String nuevaCategoria = (String) JOptionPane.showInputDialog(
-                this, "Seleccione la nueva categoría:", "Categoría",
-                JOptionPane.QUESTION_MESSAGE, null, categorias, categoriaActual);
+        String nuevaCategoria = (String) JOptionPane.showInputDialog(this, "Seleccione la nueva categoría:",
+                "Categoría", JOptionPane.QUESTION_MESSAGE, null, categorias, categoriaActual);
         if (nuevaCategoria == null) return;
 
         String nuevoDetalle = "";
@@ -357,14 +452,62 @@ public class ProductosView extends javax.swing.JFrame {
         if (nuevoDetalle == null || nuevoDetalle.trim().isEmpty()) return;
 
         // Actualizar tabla
-        modelo.setValueAt(nuevoNombre, filaSeleccionada, 1);
-        modelo.setValueAt(nuevaCategoria, filaSeleccionada, 2);
+        modelo.setValueAt(nuevoNombre, fila, 1);
+        modelo.setValueAt(nuevaCategoria, fila, 2);
 
-        
+        // Actualizar archivo
+        actualizarArchivo(fila, codigo, nuevoNombre, nuevaCategoria, nuevoDetalle);
 
         JOptionPane.showMessageDialog(this, "Producto modificado correctamente.");
-        }
+        
     }//GEN-LAST:event_btnModificarActionPerformed
+
+    private void btnCargarCSVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCargarCSVActionPerformed
+        // TODO add your handling code here:
+        JFileChooser fc = new JFileChooser();
+        int seleccion = fc.showOpenDialog(this);
+        if (seleccion == JFileChooser.APPROVE_OPTION) {
+            File archivo = fc.getSelectedFile();
+            try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
+                String linea;
+                int agregados = 0;
+                while ((linea = br.readLine()) != null) {
+                    String[] datos = linea.split(",", 4);
+                    if (datos.length < 4) continue; // validar formato
+
+                    String codigo = datos[0].trim();
+                    String nombre = datos[1].trim();
+                    String categoria = datos[2].trim();
+                    String detalle = datos[3].trim();
+
+                    // Verificar unicidad de código
+                    if (buscarFilaPorCodigo(codigo) >= 0) continue;
+
+                    // Agregar a tabla
+                    modelo.addRow(new Object[]{codigo, nombre, categoria, "Ver detalle"});
+
+                    // Guardar en archivo
+                    guardarProductos(codigo, nombre, categoria, detalle);
+
+                    // Ajustar contador
+                    if (codigo.startsWith("P")) {
+                        try {
+                            int num = Integer.parseInt(codigo.substring(1));
+                            if (num >= contadorProductos) contadorProductos = num + 1;
+                        } catch (NumberFormatException e) {
+                            // ignorar
+                        }
+                    }
+
+                    agregados++;
+                }
+
+                JOptionPane.showMessageDialog(this, agregados + " productos agregados exitosamente.");
+            } catch (IOException e) {
+                JOptionPane.showMessageDialog(this, "Error al leer archivo CSV: " + e.getMessage());
+            }
+        }
+    }//GEN-LAST:event_btnCargarCSVActionPerformed
 
     /**
      * @param args the command line arguments
@@ -393,6 +536,7 @@ public class ProductosView extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnAgregar;
+    private javax.swing.JButton btnCargarCSV;
     private javax.swing.JButton btnEliminar;
     private javax.swing.JButton btnModificar;
     private javax.swing.JButton btnRegresar;
