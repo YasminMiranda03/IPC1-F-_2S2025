@@ -337,15 +337,12 @@ public class VendedorView extends javax.swing.JFrame {
         int filaSeleccionada = tablaProductosVenta.getSelectedRow();
 
         if (filaSeleccionada >= 0) {
-            String codigo = (String) modeloProductos.getValueAt(filaSeleccionada, 0); // código existente
-            String nombre = (String) modeloProductos.getValueAt(filaSeleccionada, 1);
-            double precio = Double.parseDouble((String) modeloProductos.getValueAt(filaSeleccionada, 2));
-            int stock = Integer.parseInt((String) modeloProductos.getValueAt(filaSeleccionada, 3));
+            String codigo = (String) modeloProductos.getValueAt(filaSeleccionada, 0); // código
+            String nombre = (String) modeloProductos.getValueAt(filaSeleccionada, 1); // nombre
 
             String cantidadStr = JOptionPane.showInputDialog(this, "Ingrese cantidad a vender:");
             if (cantidadStr != null) {
                 int cantidadVenta;
-
                 try {
                     cantidadVenta = Integer.parseInt(cantidadStr);
                 } catch (NumberFormatException e) {
@@ -358,25 +355,17 @@ public class VendedorView extends javax.swing.JFrame {
                     return;
                 }
 
-                if (cantidadVenta <= stock) {
-                    double subtotal = cantidadVenta * precio;
+                // Registrar venta en archivo sin precio ni subtotal
+                try (FileWriter fw = new FileWriter("ventas.txt", true);
+                     PrintWriter pw = new PrintWriter(fw)) {
+                    LocalDateTime fecha = LocalDateTime.now();
+                    DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+                    String fechaHora = fecha.format(formato);
 
-                    // Actualizar stock en tabla
-                    int nuevoStock = stock - cantidadVenta;
-                    modeloProductos.setValueAt(String.valueOf(nuevoStock), filaSeleccionada, 3);
-
-                    // Actualizar stock en archivo
-                    actualizarStockProducto(codigo, nuevoStock);
-
-                    // Registrar venta en archivo
-                    registrarVenta(codigo, nombre, cantidadVenta, precio, subtotal);
-
-                    // Actualizar total
-                    
-                    JOptionPane.showMessageDialog(this,
-                        "Venta registrada de " + cantidadVenta + " " + nombre + "(s)\nSubtotal: Q" + subtotal);
-                } else {
-                    JOptionPane.showMessageDialog(this, "No hay suficiente stock para esa cantidad.");
+                    pw.println(codigo + "," + nombre + "," + cantidadVenta + "," + "0" + "," + "0" + "," + fechaHora);
+                    JOptionPane.showMessageDialog(this, "Venta registrada de " + cantidadVenta + " " + nombre + "(s)");
+                } catch (IOException e) {
+                    JOptionPane.showMessageDialog(this, "Error al ingresar la venta: " + e.getMessage());
                 }
             }
         } else {
@@ -440,6 +429,10 @@ public class VendedorView extends javax.swing.JFrame {
 
     private void btnAgregarStockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarStockActionPerformed
         // TODO add your handling code here:
+        if (controlador == null) {
+            JOptionPane.showMessageDialog(this, "Error: controlador no inicializado");
+            return;
+        }
         String codigo = JOptionPane.showInputDialog(this, "Ingrese código del producto:");
         if (codigo == null || codigo.trim().isEmpty()) return;
 

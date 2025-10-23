@@ -16,7 +16,7 @@ import javax.swing.table.DefaultTableModel;
 
 /**
  *
- * @author APROJUSA
+ * @author Katherin Yasmin
  */
 public class VendedorControlador {
     private VendedorView vista;

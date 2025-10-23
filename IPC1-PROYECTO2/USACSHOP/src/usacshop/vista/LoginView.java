@@ -11,6 +11,7 @@ package usacshop.vista;
 import usacshop.vista.AdminView;
 import usacshop.vista.VendedorView;
 import usacshop.vista.ClienteView;
+import usacshop.controlador.VendedorControlador;
 
 
 
