@@ -139,7 +139,7 @@ public class GestionClientesView extends javax.swing.JFrame {
                 {null, null, null, null, null}
             },
             new String [] {
-                "Codigo", "Nombre", "Genero", "Fecha Nacimiento", "Acciones"
+                "Codigo", "Nombre", "Genero", "Fecha Nacimiento", "Contraseña"
             }
         ));
         jScrollPane1.setViewportView(tablaClientes);

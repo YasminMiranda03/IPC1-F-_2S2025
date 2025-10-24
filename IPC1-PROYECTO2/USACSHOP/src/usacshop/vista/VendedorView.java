@@ -10,6 +10,7 @@ import usacshop.modelo.Producto;
 import usacshop.modelo.Alimento;
 import usacshop.modelo.Tecnologia;
 import usacshop.modelo.General;
+import usacshop.controlador.ManejadorProductos;
 
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -19,6 +20,7 @@ import java.io.*;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
+import javax.swing.JFileChooser;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -34,8 +36,9 @@ public class VendedorView extends javax.swing.JFrame {
 
     DefaultTableModel modeloProductos;
     private VendedorControlador controlador;
-    private int contadorProductos = 1;
-    private Producto[] productos = new Producto[100];
+    private ManejadorProductos manejadorProductos; // maneja todos los productos
+
+    
     /**
      * Creates new form VendedorView
      */
@@ -44,6 +47,7 @@ public class VendedorView extends javax.swing.JFrame {
         setLocationRelativeTo(null);
         setTitle("USAC SHOP - Vendedor");
         
+        manejadorProductos = new ManejadorProductos(100);
         //para crear la tabla
         modeloProductos = new DefaultTableModel();
         modeloProductos.addColumn("Codigo");
@@ -54,6 +58,7 @@ public class VendedorView extends javax.swing.JFrame {
         
         tablaProductosVenta.setModel(modeloProductos);  //modelo
         cargarProductos();
+        mostrarProductosEnTabla();
     }
 
     /**
@@ -221,7 +226,11 @@ public class VendedorView extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
     
     
-    
+    public void setControlador(VendedorControlador controlador) {
+        this.controlador = controlador;
+    }
+    //-------------------------------------------------------------------------------------------------------------------------------------------------------
+    //METODOS PARA PRODUCTOS
     private String generarCodigoProducto(){
         File archivo = new File("productos.txt");
         int ultimoNumero = 0;
@@ -249,12 +258,6 @@ public class VendedorView extends javax.swing.JFrame {
         return String.format("P%03d", nuevoNumero);
     }
     
-    
-
-    public void setControlador(VendedorControlador controlador) {
-        this.controlador = controlador;
-    }
-    
     public void limpiarTablaProductos() {
         DefaultTableModel modelo = (DefaultTableModel) tablaProductosVenta.getModel();
         modelo.setRowCount(0);
@@ -271,20 +274,18 @@ public class VendedorView extends javax.swing.JFrame {
         });
     }
     private void mostrarProductosEnTabla() {
-        DefaultTableModel modelo = (DefaultTableModel) tablaProductosVenta.getModel();
-        modelo.setRowCount(0); // limpiar tabla
+        modeloProductos.setRowCount(0); // limpiar tabla
 
-            for (int i = 0; i < contadorProductos; i++) {
-            Producto p = productos[i];
-            if (p != null) { //evita el null pointer
-                Object[] fila = {
-                    p.getCodigo(),
-                    p.getNombre(),
-                    p.getCategoria(),
-                    p.getDetalle()
-                };
-                modelo.addRow(fila);
-            }
+        Producto[] lista = manejadorProductos.getProductos();
+        for (int i = 0; i < manejadorProductos.getCantidad(); i++) {
+            Producto p = lista[i];
+            modeloProductos.addRow(new Object[]{
+                p.getCodigo(),
+                p.getNombre(),
+                p.getCategoria(),
+                p.getDetalle(),
+                p.getStock()
+            });
         }
     }
     
@@ -297,8 +298,7 @@ public class VendedorView extends javax.swing.JFrame {
             String linea;
             while ((linea = br.readLine()) != null) {
                 String[] datos = linea.split(",");
-
-                if (datos.length < 4) continue; // línea incompleta, se salta
+                if (datos.length < 4) continue;
 
                 String codigo = datos[0].trim();
                 String nombre = datos[1].trim();
@@ -318,18 +318,43 @@ public class VendedorView extends javax.swing.JFrame {
                         p = new General(codigo, nombre, categoria, detalle);
                         break;
                     default:
-                        continue; // categoría desconocida → se ignora la línea
+                        continue;
                 }
 
-                if (contadorProductos < productos.length && p != null) {
-                    productos[contadorProductos++] = p;
+                if (p != null) {
+                    manejadorProductos.agregarProducto(p);
                 }
             }
 
-            mostrarProductosEnTabla(); // ✅ se muestran al final
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this, "Error al cargar productos: " + e.getMessage());
         }
+    }
+    
+    private void actualizarStockArchivo(String codigoProducto, int nuevoStock) {
+        File archivo = new File("productos.txt");
+        File temp = new File("productos_temp.txt");
+
+        try (BufferedReader br = new BufferedReader(new FileReader(archivo));
+             PrintWriter pw = new PrintWriter(new FileWriter(temp))) {
+
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                String[] partes = linea.split(",");
+                if (partes[0].equals(codigoProducto)) {
+                    partes[3] = String.valueOf(nuevoStock);
+                    pw.println(String.join(",", partes));
+                } else {
+                    pw.println(linea);
+                }
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Error al actualizar stock: " + e.getMessage());
+            return;
+        }
+
+        archivo.delete();
+        temp.renameTo(archivo);
     }
     
     private void btnRegistrarVentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarVentaActionPerformed
@@ -373,32 +398,7 @@ public class VendedorView extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnRegistrarVentaActionPerformed
 
-    private void actualizarStockProducto(String codigoProducto, int nuevoStock) {
-        File archivo = new File("productos.txt");
-        File temp = new File("productos_temp.txt");
-
-        try (BufferedReader br = new BufferedReader(new FileReader(archivo));
-             PrintWriter pw = new PrintWriter(new FileWriter(temp))) {
-
-            String linea;
-            while ((linea = br.readLine()) != null) {
-                String[] partes = linea.split(",");
-                if (partes[0].equals(codigoProducto)) {
-                    partes[3] = String.valueOf(nuevoStock);
-                    pw.println(String.join(",", partes));
-                } else {
-                    pw.println(linea);
-                }
-            }
-        } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "Error al actualizar stock: " + e.getMessage());
-            return;
-        }
-
-        archivo.delete();
-        temp.renameTo(archivo);
-    }
-    
+       
     private void registrarVenta(String codigo, String nombre, int cantidad, double precioUnitario, double total) {
         try (FileWriter fw = new FileWriter("ventas.txt", true);
              PrintWriter pw = new PrintWriter(fw)) {
@@ -411,7 +411,10 @@ public class VendedorView extends javax.swing.JFrame {
         }catch (IOException e){
             JOptionPane.showMessageDialog(this, "Error al ingresar la venta: " + e.getMessage());
             }
-        }    
+        } 
+    
+ 
+
     private void btnCerrarSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarSesionActionPerformed
         // TODO add your handling code here:
         LoginView login = new LoginView();
@@ -429,10 +432,6 @@ public class VendedorView extends javax.swing.JFrame {
 
     private void btnAgregarStockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAgregarStockActionPerformed
         // TODO add your handling code here:
-        if (controlador == null) {
-            JOptionPane.showMessageDialog(this, "Error: controlador no inicializado");
-            return;
-        }
         String codigo = JOptionPane.showInputDialog(this, "Ingrese código del producto:");
         if (codigo == null || codigo.trim().isEmpty()) return;
 
@@ -441,9 +440,16 @@ public class VendedorView extends javax.swing.JFrame {
 
         try {
             int cantidad = Integer.parseInt(cantidadStr);
-            String usuario = "Vendedor1"; // aquí puedes usar usuario logueado
-            controlador.registrarIngresoStock(codigo, cantidad, usuario);
-            controlador.actualizarTabla(); // recargar tabla después de actualizar stock
+
+            Producto p = manejadorProductos.buscarProductoPorCodigo(codigo);
+            if (p != null) {
+                p.setStock(p.getStock() + cantidad);
+                mostrarProductosEnTabla();
+                actualizarStockArchivo(codigo, p.getStock());
+                JOptionPane.showMessageDialog(this, "Stock actualizado para " + p.getNombre());
+            } else {
+                JOptionPane.showMessageDialog(this, "Producto no encontrado.");
+            }
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Cantidad inválida");
         }
