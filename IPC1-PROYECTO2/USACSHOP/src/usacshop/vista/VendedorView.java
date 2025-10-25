@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.io.PrintWriter;
+import java.time.*;
 
 /**
  *
@@ -37,8 +38,9 @@ public class VendedorView extends javax.swing.JFrame {
     DefaultTableModel modeloProductos;
     private VendedorControlador controlador;
     private ManejadorProductos manejadorProductos; // maneja todos los productos
-
-    
+    private int[] stockProductos = new int [100];    //arreglo para el stock
+   
+    private DefaultTableModel modeloPedidos;
     /**
      * Creates new form VendedorView
      */
@@ -58,7 +60,9 @@ public class VendedorView extends javax.swing.JFrame {
         
         tablaProductosVenta.setModel(modeloProductos);  //modelo
         cargarProductos();
+        manejadorProductos.cargarStockDesdeArchivo("stock.txt");
         mostrarProductosEnTabla();
+        
     }
 
     /**
@@ -82,6 +86,7 @@ public class VendedorView extends javax.swing.JFrame {
         btnAgregarStock = new javax.swing.JButton();
         btnCargarStockCSV = new javax.swing.JButton();
         btnVerHistorialStock = new javax.swing.JButton();
+        btnPedidos = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -140,10 +145,17 @@ public class VendedorView extends javax.swing.JFrame {
             }
         });
 
-        btnVerHistorialStock.setText("Historial Stock");
+        btnVerHistorialStock.setText("Historial");
         btnVerHistorialStock.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnVerHistorialStockActionPerformed(evt);
+            }
+        });
+
+        btnPedidos.setText("Pedidos");
+        btnPedidos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnPedidosActionPerformed(evt);
             }
         });
 
@@ -189,7 +201,8 @@ public class VendedorView extends javax.swing.JFrame {
                             .addGroup(layout.createSequentialGroup()
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(btnVerHistorialStock)
-                                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(btnPedidos))
                                 .addGap(0, 0, Short.MAX_VALUE))))))
         );
         layout.setVerticalGroup(
@@ -209,7 +222,9 @@ public class VendedorView extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addComponent(btnCargarStockCSV)
                         .addGap(18, 18, 18)
-                        .addComponent(btnVerHistorialStock)))
+                        .addComponent(btnVerHistorialStock)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnPedidos)))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnRegistrarVenta)
@@ -330,7 +345,8 @@ public class VendedorView extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Error al cargar productos: " + e.getMessage());
         }
     }
-    
+    //---------------------------------------------------------------------------------------------------------
+    //              PARA EL STOCK
     private void actualizarStockArchivo(String codigoProducto, int nuevoStock) {
         File archivo = new File("productos.txt");
         File temp = new File("productos_temp.txt");
@@ -357,6 +373,23 @@ public class VendedorView extends javax.swing.JFrame {
         temp.renameTo(archivo);
     }
     
+    private void registrarHistorial(String usuario, String codigoProducto, int cantidad) {
+        File archivo = new File("historial.txt");
+        LocalDate fecha = LocalDate.now();
+        LocalTime hora = LocalTime.now().withNano(0);
+
+        // formato: fecha,hora,codigo,cantidad,usuario
+        String linea = fecha + "," + hora + "," + codigoProducto + "," + cantidad + "," + usuario;
+
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(archivo, true))) {
+            bw.write(linea);
+            bw.newLine();
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Error al registrar historial: " + e.getMessage());
+        }
+    }
+
+    
     private void btnRegistrarVentaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegistrarVentaActionPerformed
         // TODO add your handling code here:
         int filaSeleccionada = tablaProductosVenta.getSelectedRow();
@@ -380,7 +413,27 @@ public class VendedorView extends javax.swing.JFrame {
                     return;
                 }
 
-                // Registrar venta en archivo sin precio ni subtotal
+                // Buscar producto en el manejador
+                Producto producto = manejadorProductos.buscarProductoPorCodigo(codigo);
+
+                if (producto == null) {
+                    JOptionPane.showMessageDialog(this, "Error: el producto no existe en el sistema.");
+                    return;
+                }
+
+                // Verificar stock disponible
+                if (producto.getStock() < cantidadVenta) {
+                    JOptionPane.showMessageDialog(this, "Stock insuficiente. Disponible: " + producto.getStock());
+                    return;
+                }
+
+                // Actualizar stock en memoria
+                producto.disminuirStock(cantidadVenta);
+
+                // Guardar stock actualizado en el archivo stock.txt
+                manejadorProductos.guardarStockEnArchivo("stock.txt");
+
+                // Registrar la venta en ventas.txt
                 try (FileWriter fw = new FileWriter("ventas.txt", true);
                      PrintWriter pw = new PrintWriter(fw)) {
                     LocalDateTime fecha = LocalDateTime.now();
@@ -392,6 +445,9 @@ public class VendedorView extends javax.swing.JFrame {
                 } catch (IOException e) {
                     JOptionPane.showMessageDialog(this, "Error al ingresar la venta: " + e.getMessage());
                 }
+
+                // Actualizar tabla en pantalla
+                modeloProductos.setValueAt(producto.getStock(), filaSeleccionada, 4); // Columna 4 = Stock
             }
         } else {
             JOptionPane.showMessageDialog(this, "Seleccione un producto para vender.");
@@ -414,6 +470,9 @@ public class VendedorView extends javax.swing.JFrame {
         } 
     
  
+    //-------------------------------------------------------------------------------------------------------------------------------------
+    //                PARA LOS PEDIDOS
+    
 
     private void btnCerrarSesionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCerrarSesionActionPerformed
         // TODO add your handling code here:
@@ -447,12 +506,15 @@ public class VendedorView extends javax.swing.JFrame {
                 mostrarProductosEnTabla();
                 actualizarStockArchivo(codigo, p.getStock());
                 JOptionPane.showMessageDialog(this, "Stock actualizado para " + p.getNombre());
+           
+                registrarHistorial("Vendedor1", codigo, cantidad);
             } else {
                 JOptionPane.showMessageDialog(this, "Producto no encontrado.");
             }
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Cantidad inválida");
         }
+        
     }//GEN-LAST:event_btnAgregarStockActionPerformed
 
     private void btnCargarStockCSVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCargarStockCSVActionPerformed
@@ -468,8 +530,15 @@ public class VendedorView extends javax.swing.JFrame {
 
     private void btnVerHistorialStockActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVerHistorialStockActionPerformed
         // TODO add your handling code here:
-        controlador.verHistorial();
+        HistorialView hv = new HistorialView();
+        hv.setVisible(true);
     }//GEN-LAST:event_btnVerHistorialStockActionPerformed
+
+    private void btnPedidosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPedidosActionPerformed
+        // TODO add your handling code here:
+        PedidosView pd = new PedidosView();
+        pd.setVisible(true);
+    }//GEN-LAST:event_btnPedidosActionPerformed
 
     /**
      * @param args the command line arguments
@@ -500,6 +569,7 @@ public class VendedorView extends javax.swing.JFrame {
     private javax.swing.JButton btnAgregarStock;
     private javax.swing.JButton btnCargarStockCSV;
     private javax.swing.JButton btnCerrarSesion;
+    private javax.swing.JButton btnPedidos;
     private javax.swing.JButton btnRegistrarCliente;
     private javax.swing.JButton btnRegistrarVenta;
     private javax.swing.JButton btnVerHistorialStock;

@@ -14,12 +14,14 @@ public abstract class Producto implements Serializable{
     protected String codigo;
     protected String nombre;
     protected String categoria;
-    protected int stock; 
+    protected String detalle;
+    protected int stock;
     
-    public Producto(String codigo, String nombre, String categoria){
+    public Producto(String codigo, String nombre, String categoria, String detalle){
         this.codigo = codigo;
         this.nombre = nombre;
         this.categoria = categoria;
+        this.detalle = detalle;
         this.stock = 0;
     }
     
@@ -32,18 +34,25 @@ public abstract class Producto implements Serializable{
     public String getCategoria(){
         return categoria;
     }
+    public abstract String getDetalle();
+    public int getStock() { 
+        return stock; 
+    }
     
+    //--------------------------------------------------------
     public void setNombre(String nombre){
         this.nombre = nombre;
     }
     
-    public int getStock() {
-        return stock;
-    }
 
     public void setStock(int stock) {
         this.stock = stock;
     }
     
-    public abstract String getDetalle();
+    public void aumentarStock(int cantidad) { 
+        this.stock += cantidad; 
+    }
+    public void disminuirStock(int cantidad) { 
+        this.stock -= cantidad; 
+    }
 }

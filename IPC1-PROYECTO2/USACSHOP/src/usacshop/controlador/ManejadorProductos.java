@@ -6,6 +6,8 @@ package usacshop.controlador;
 
 import usacshop.modelo.Producto;
 
+import java.io.*;
+
 /**
  *
  * @author Katherin Yasmin
@@ -73,6 +75,73 @@ public class ManejadorProductos {
             System.out.println(p.getCodigo() + " - " + p.getNombre() + " - " +
                                p.getCategoria() + " - " + p.getDetalle() +
                                " - Stock: " + p.getStock());
+        }
+    }
+    
+    //-----------PARA MANEJAR EL STOCK-----------
+    // Aumentar stock de un producto
+    public boolean aumentarStock(String codigo, int cantidad) {
+        Producto p = buscarProductoPorCodigo(codigo);
+        if (p != null) {
+            p.setStock(p.getStock() + cantidad);
+            return true;
+        }
+        return false;
+    }
+
+    // Disminuir stock de un producto (sin dejarlo negativo)
+    public boolean disminuirStock(String codigo, int cantidad) {
+        Producto p = buscarProductoPorCodigo(codigo);
+        if (p != null) {
+            if (p.getStock() >= cantidad) {
+                p.setStock(p.getStock() - cantidad);
+                return true;
+            } else {
+                System.out.println("No hay suficiente stock disponible para " + p.getNombre());
+            }
+        }
+        return false;
+    }
+
+    // Verificar si hay stock disponible
+    public boolean hayStockDisponible(String codigo, int cantidad) {
+        Producto p = buscarProductoPorCodigo(codigo);
+        return (p != null && p.getStock() >= cantidad);
+    }
+    public void cargarStockDesdeArchivo(String rutaArchivo) {
+        try (BufferedReader br = new BufferedReader(new FileReader(rutaArchivo))) {
+            String linea;
+            while ((linea = br.readLine()) != null) {
+                String[] partes = linea.split(",");
+                if (partes.length == 2) {
+                    String codigo = partes[0];
+                    int cantidad = Integer.parseInt(partes[1]);
+
+                    // Buscar el producto existente y asignarle el stock
+                    Producto p = buscarProductoPorCodigo(codigo);
+                    if (p != null) {
+                        p.setStock(cantidad);
+                    }
+                }
+            }
+            System.out.println("Stock cargado correctamente desde " + rutaArchivo);
+        } catch (IOException e) {
+            System.out.println("Error al leer el archivo de stock: " + e.getMessage());
+        }
+    }
+
+    public void guardarStockEnArchivo(String rutaArchivo) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(rutaArchivo))) {
+            for (int i = 0; i < contador; i++) {
+                Producto p = productos[i];
+                if (p != null) {
+                    bw.write(p.getCodigo() + "," + p.getStock());
+                    bw.newLine();
+                }
+            }
+            System.out.println("Stock actualizado en archivo: " + rutaArchivo);
+        } catch (IOException e) {
+            System.out.println("Error al guardar el archivo de stock: " + e.getMessage());
         }
     }
 }

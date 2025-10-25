@@ -12,12 +12,8 @@ public class Alimento extends Producto {
     private String fechaCaducidad;
 
     public Alimento(String codigo, String nombre, String categoria, String fechaCaducidad) {
-        super(codigo, nombre, categoria);
+        super(codigo, nombre, categoria, "Fecha de caducidad: " + fechaCaducidad);
         this.fechaCaducidad = fechaCaducidad;
-    }
-
-    public String getFechaCaducidad() {
-        return fechaCaducidad;
     }
 
     @Override
