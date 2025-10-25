@@ -12,6 +12,7 @@ import usacshop.vista.AdminView;
 import usacshop.vista.VendedorView;
 import usacshop.vista.ClienteView;
 import usacshop.controlador.VendedorControlador;
+import usacshop.controlador.Bitacora;
 
 
 
@@ -138,6 +139,7 @@ public class LoginView extends javax.swing.JFrame {
             AdminView admin = new AdminView();
             admin.setVisible(true);
             this.dispose();
+            Bitacora.registrarEvento("ADMIN", adminCodigo, "LOGIN", "EXITOSA", "Login exitoso de administrador");
             return;
         }
 
@@ -158,9 +160,11 @@ public class LoginView extends javax.swing.JFrame {
                     if (usuarioTexto.equalsIgnoreCase(codigo) && contrasenaTexto.equals(contrasena)) {
                         vendedorEncontrado = true;
                         JOptionPane.showMessageDialog(this, "Bienvenido, " + nombre + " (Vendedor)", "Acceso correcto", JOptionPane.INFORMATION_MESSAGE);
+                        
                         VendedorView vendedor = new VendedorView();
                         vendedor.setVisible(true);
                         this.dispose();
+                        Bitacora.registrarEvento("VENDEDOR", codigo, "LOGIN", "EXITOSA", "Login exitoso de vendedor");
                         break;
                     }
                 }
@@ -168,6 +172,7 @@ public class LoginView extends javax.swing.JFrame {
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this, "No se encontró el archivo de vendedores.\nPrimero debe registrar al menos un vendedor.", "Error", JOptionPane.ERROR_MESSAGE);
         }
+        
         
         //login de cliente
         boolean clienteEncontrado = false;
@@ -181,13 +186,15 @@ public class LoginView extends javax.swing.JFrame {
                     String genero = datos[2].trim();
                     String fechaNacimiento = datos[3].trim();
                     String contrasenaCliente = datos[4].trim();
-
+                    //si coinciden el usuario y contraseña entonces:
                     if (usuarioTexto.equalsIgnoreCase(codigo) && contrasenaTexto.equals(contrasenaCliente)) {
                         clienteEncontrado = true;
                         JOptionPane.showMessageDialog(this, "Bienvenido, " + nombre + " (Cliente)", "Acceso correcto", JOptionPane.INFORMATION_MESSAGE);
-                        ClienteView cliente = new ClienteView();
+                        
+                        ClienteView cliente = new ClienteView(codigo, nombre);
                         cliente.setVisible(true);
                         this.dispose();
+                        Bitacora.registrarEvento("CLIENTE", codigo, "LOGIN", "EXITOSA", "Login exitoso de cliente");
                         return;
                     }
                 }

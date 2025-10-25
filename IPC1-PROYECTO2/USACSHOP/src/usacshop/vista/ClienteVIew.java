@@ -4,6 +4,8 @@
  */
 package usacshop.vista;
 
+import usacshop.controlador.Bitacora;
+
 import javax.swing.table.DefaultTableModel;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -12,21 +14,32 @@ import java.io.*;
 import javax.swing.JOptionPane;
 /**
  *
- * @author APROJUSA
+ * @author Katherin Yasmin
  */
 public class ClienteView extends javax.swing.JFrame {
     
     private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(ClienteView.class.getName());
-
+    private String codigoCliente;
+    private String nombreCliente;
     /**
      * Creates new form ClientesVIew
      */
-    public ClienteView() {
+    public ClienteView() {  //contructor vacio
         initComponents();
         setLocationRelativeTo(null);
+        this.codigoCliente = "CL000";
+        this.nombreCliente = "Invitado";
         btnVerProductosActionPerformed(null);
     }
 
+    // Constructor que recibe código y nombre del cliente (para usar desde Login)
+    public ClienteView(String codigoCliente, String nombreCliente) {
+        initComponents();
+        setLocationRelativeTo(null);
+        this.codigoCliente = codigoCliente;
+        this.nombreCliente = nombreCliente;
+        btnVerProductosActionPerformed(null);
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -44,6 +57,7 @@ public class ClienteView extends javax.swing.JFrame {
         jScrollPane2 = new javax.swing.JScrollPane();
         btnComprar = new javax.swing.JButton();
         btnHistorialCompras = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -78,7 +92,7 @@ public class ClienteView extends javax.swing.JFrame {
         ));
         jScrollPane1.setViewportView(tablaProductos);
 
-        btnComprar.setText("Comprar");
+        btnComprar.setText("Realizar compra");
         btnComprar.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnComprarActionPerformed(evt);
@@ -92,6 +106,8 @@ public class ClienteView extends javax.swing.JFrame {
             }
         });
 
+        jButton1.setText("Carrito");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -104,18 +120,21 @@ public class ClienteView extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
+                        .addGap(193, 193, 193)
+                        .addComponent(jLabel1))
+                    .addGroup(layout.createSequentialGroup()
                         .addGap(22, 22, 22)
                         .addComponent(btnVerProductos)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnCerrarSesion)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnComprar)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btnHistorialCompras))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(193, 193, 193)
-                        .addComponent(jLabel1)))
-                .addContainerGap(58, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jButton1)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(btnCerrarSesion)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(btnComprar)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                                .addComponent(btnHistorialCompras)))))
+                .addContainerGap(21, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -132,7 +151,9 @@ public class ClienteView extends javax.swing.JFrame {
                     .addComponent(btnVerProductos)
                     .addComponent(btnComprar)
                     .addComponent(btnHistorialCompras))
-                .addContainerGap(58, Short.MAX_VALUE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jButton1)
+                .addContainerGap(25, Short.MAX_VALUE))
         );
 
         pack();
@@ -189,18 +210,19 @@ public class ClienteView extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(this, "Debe seleccionar un producto de la tabla.", "Advertencia", JOptionPane.WARNING_MESSAGE);
             return;
         }
-        
+
         DefaultTableModel modelo = (DefaultTableModel) tablaProductos.getModel();
         String codigo = modelo.getValueAt(filaSeleccionada, 0).toString();
         String nombre = modelo.getValueAt(filaSeleccionada, 1).toString();
-        double precio = Double.parseDouble(modelo.getValueAt(filaSeleccionada, 2).toString());
-        int cantidadDisponible = Integer.parseInt(modelo.getValueAt(filaSeleccionada, 3).toString());
+        String categoria = modelo.getValueAt(filaSeleccionada, 2).toString();
+        String detalles = modelo.getValueAt(filaSeleccionada, 3).toString();
 
-        String cantidadTexto = JOptionPane.showInputDialog(this, "Ingrese la cantidad que desea comprar:");
+        // Pedir cantidad
+        String cantidadTexto = JOptionPane.showInputDialog(this, "Ingrese la cantidad que desea pedir:");
         if (cantidadTexto == null || cantidadTexto.isEmpty()) {
             return;
         }
-        
+
         int cantidadCompra;
         try {
             cantidadCompra = Integer.parseInt(cantidadTexto);
@@ -214,93 +236,56 @@ public class ClienteView extends javax.swing.JFrame {
             return;
         }
 
-        if (cantidadCompra > cantidadDisponible) {
-            JOptionPane.showMessageDialog(this, "No hay suficiente stock disponible.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
+        // En este punto el cliente realiza un pedido pendiente, no una compra directa
+        double total = cantidadCompra * 10.0; // puedes usar un precio real si lo manejas
 
-        double total = cantidadCompra * precio;
-        
-        // para obtener la fecha actual y que se registre al momento de ralizar la compra
-        java.time.LocalDateTime fechaActual = java.time.LocalDateTime.now();
-        java.time.format.DateTimeFormatter formato = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        String fechaCompra = fechaActual.format(formato);
-        
-        //AQUI SE GUARDA LA COMPRA EN VENTAS.TXT
-        try (FileWriter fw = new FileWriter("ventas.txt", true);
-            BufferedWriter bw = new BufferedWriter(fw);
-            PrintWriter out = new PrintWriter(bw)) {
-           out.println(codigo + "," + nombre + "," + cantidadCompra + "," + precio + "," + total + "," + fechaCompra);
-       } catch (IOException e) {
-           JOptionPane.showMessageDialog(this, "Error al registrar la compra.", "Error", JOptionPane.ERROR_MESSAGE);
-           return;
-       }
-        
-        //ACTUALIZA LOS PRODUCTOS.TXT RESTA LA CANTIDAD
-        File inputFile = new File("productos.txt");
-        File tempFile = new File("productos_temp.txt");
+        java.time.LocalDate fechaActual = java.time.LocalDate.now();
+        java.time.format.DateTimeFormatter formato = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String codigoCliente = this.codigoCliente;
+        String nombreCliente = this.nombreCliente;
 
-        try (BufferedReader reader = new BufferedReader(new FileReader(inputFile));
-             BufferedWriter writer = new BufferedWriter(new FileWriter(tempFile))) {
-
-            String linea;
-            while ((linea = reader.readLine()) != null) {
-                String[] datos = linea.split(",");
-                if (datos.length >= 4) {
-                    String codigoArchivo = datos[0].trim();
-                    if (codigoArchivo.equals(codigo)) {
-                        int nuevaCantidad = cantidadDisponible - cantidadCompra;
-                        writer.write(codigo + "," + nombre + "," + precio + "," + nuevaCantidad);
-                    } else {
-                        writer.write(linea);
-                    }
-                    writer.newLine();
-                }
-            }
-
+        try (FileWriter fw = new FileWriter("pedidos.txt", true);
+             BufferedWriter bw = new BufferedWriter(fw);
+             PrintWriter out = new PrintWriter(bw)) {
+            out.println(codigo + "," + fechaActual.format(formato) + "," + codigoCliente + "," + nombreCliente + "," + total + ",Pendiente");
+        Bitacora.registrarEvento("CLIENTE", codigoCliente, "REALIZAR_PEDIDO", "EXITOSA", 
+                                 "Pedido creado: Total $" + total + ", " + cantidadCompra + " productos");
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "Error al actualizar el stock.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Error al registrar el pedido.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
-        }
-        
-        //remplaza en el archivo viejo
-        if (!inputFile.delete() || !tempFile.renameTo(inputFile)) {
-            JOptionPane.showMessageDialog(this, "No se pudo actualizar el archivo de productos.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-         JOptionPane.showMessageDialog(this, "Compra realizada con éxito.\nTotal: Q" + total, "Compra exitosa", JOptionPane.INFORMATION_MESSAGE);
-         btnVerProductosActionPerformed(null);
-        
-        
+    }
+
+    JOptionPane.showMessageDialog(this,
+        "Pedido realizado con éxito.\nSerá confirmado por un vendedor.",
+        "Pedido registrado",
+        JOptionPane.INFORMATION_MESSAGE);    
     }//GEN-LAST:event_btnComprarActionPerformed
 
     private void btnHistorialComprasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHistorialComprasActionPerformed
         // TODO add your handling code here:
         DefaultTableModel modelo = new DefaultTableModel();
-        modelo.addColumn("Código");
-        modelo.addColumn("Producto");
-        modelo.addColumn("Cantidad");
-        modelo.addColumn("Precio Unitario");
-        modelo.addColumn("Total");
-        modelo.addColumn("Fecha");
+    modelo.addColumn("Código");
+    modelo.addColumn("Fecha");
+    modelo.addColumn("Cliente");
+    modelo.addColumn("Total");
+    modelo.addColumn("Estado");
 
-        try (BufferedReader reader = new BufferedReader(new FileReader("ventas.txt"))) {
-            String linea;
+    try (BufferedReader reader = new BufferedReader(new FileReader("pedidos_confirmados.txt"))) {
+        String linea;
             while ((linea = reader.readLine()) != null) {
                 String[] datos = linea.split(",");
-                if (datos.length >= 6) {
+                if (datos.length == 6) {
                     String codigo = datos[0].trim();
-                    String nombre = datos[1].trim();
-                    String cantidad = datos[2].trim();
-                    String precio = datos[3].trim();
+                    String fecha = datos[1].trim();
+                    String cliente = datos[3].trim();
                     String total = datos[4].trim();
-                    String fecha = datos[5].trim();
-                    modelo.addRow(new Object[]{codigo, nombre, cantidad, precio, total, fecha});
+                    String estado = datos[5].trim();
+                    modelo.addRow(new Object[]{codigo, fecha, cliente, total, estado});
                 }
             }
             tablaProductos.setModel(modelo);
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "No se pudo leer el historial de compras.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "No se pudo leer el historial de pedidos confirmados.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_btnHistorialComprasActionPerformed
 
@@ -334,6 +319,7 @@ public class ClienteView extends javax.swing.JFrame {
     private javax.swing.JButton btnComprar;
     private javax.swing.JButton btnHistorialCompras;
     private javax.swing.JButton btnVerProductos;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;

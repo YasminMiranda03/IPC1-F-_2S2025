@@ -8,7 +8,7 @@ package usacshop.vista;
 import usacshop.vista.VendedoresView;
 import usacshop.vista.ProductosView;
 import usacshop.vista.RegistrarVendedorView;
-
+import usacshop.controlador.Bitacora;
 import java.io.File;          //para verificar archivos
 import java.io.FileWriter;    //para guardar datos
 import java.io.IOException;   //manejo de excepciones
@@ -47,6 +47,7 @@ public class AdminView extends javax.swing.JFrame {
         btnProductos = new javax.swing.JButton();
         btnCerrarSesion = new javax.swing.JButton();
         btnRegristrarVendedor = new javax.swing.JButton();
+        btnBitacora = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Administrador");
@@ -82,27 +83,36 @@ public class AdminView extends javax.swing.JFrame {
             }
         });
 
+        btnBitacora.setText("Bitacora");
+        btnBitacora.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBitacoraActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(0, 0, Short.MAX_VALUE)
-                .addComponent(btnCerrarSesion)
-                .addGap(137, 137, 137))
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(87, 87, 87)
                         .addComponent(jLabel1))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(51, 51, 51)
-                        .addComponent(btnProductos))
-                    .addGroup(layout.createSequentialGroup()
                         .addGap(26, 26, 26)
-                        .addComponent(btnVendedores)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnRegristrarVendedor)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(btnProductos)
+                                .addGap(45, 45, 45)
+                                .addComponent(btnBitacora))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(btnVendedores)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(btnRegristrarVendedor))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(138, 138, 138)
+                        .addComponent(btnCerrarSesion)))
                 .addContainerGap(85, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -114,9 +124,11 @@ public class AdminView extends javax.swing.JFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnVendedores)
                     .addComponent(btnRegristrarVendedor))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 109, Short.MAX_VALUE)
-                .addComponent(btnProductos)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnProductos)
+                    .addComponent(btnBitacora))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 97, Short.MAX_VALUE)
                 .addComponent(btnCerrarSesion)
                 .addGap(30, 30, 30))
         );
@@ -157,6 +169,12 @@ public class AdminView extends javax.swing.JFrame {
         registro.setVisible(true);
         this.dispose();
     }//GEN-LAST:event_btnRegristrarVendedorActionPerformed
+
+    private void btnBitacoraActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBitacoraActionPerformed
+        // TODO add your handling code here:
+         BitacoraView bitacora = new BitacoraView(this); 
+         bitacora.setVisible(true);
+    }//GEN-LAST:event_btnBitacoraActionPerformed
 
     public static void guardarProducto(String codigo, String nombre, double precio, int cantidad){
        try (FileWriter fw = new FileWriter("productos.txt", true);
@@ -201,6 +219,7 @@ public class AdminView extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnBitacora;
     private javax.swing.JButton btnCerrarSesion;
     private javax.swing.JButton btnProductos;
     private javax.swing.JButton btnRegristrarVendedor;

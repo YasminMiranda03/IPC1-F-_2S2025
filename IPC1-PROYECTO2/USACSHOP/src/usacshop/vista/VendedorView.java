@@ -39,12 +39,13 @@ public class VendedorView extends javax.swing.JFrame {
     private VendedorControlador controlador;
     private ManejadorProductos manejadorProductos; // maneja todos los productos
     private int[] stockProductos = new int [100];    //arreglo para el stock
-   
+    private String vendedorActual;
     private DefaultTableModel modeloPedidos;
     /**
      * Creates new form VendedorView
      */
     public VendedorView() {
+        this.vendedorActual = vendedorActual;
         initComponents();
         setLocationRelativeTo(null);
         setTitle("USAC SHOP - Vendedor");
@@ -507,7 +508,7 @@ public class VendedorView extends javax.swing.JFrame {
                 actualizarStockArchivo(codigo, p.getStock());
                 JOptionPane.showMessageDialog(this, "Stock actualizado para " + p.getNombre());
            
-                registrarHistorial("Vendedor1", codigo, cantidad);
+                registrarHistorial(vendedorActual, codigo, cantidad);
             } else {
                 JOptionPane.showMessageDialog(this, "Producto no encontrado.");
             }

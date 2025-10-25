@@ -1,0 +1,3 @@
+[25/10/2025 00:34:26] | ADMIN | admin | LOGIN | EXITOSA | Login exitoso de administrador
+[25/10/2025 00:40:54] | ADMIN | admin | LOGIN | EXITOSA | Login exitoso de administrador
+[25/10/2025 00:44:01] | ADMIN | admin | LOGIN | EXITOSA | Login exitoso de administrador

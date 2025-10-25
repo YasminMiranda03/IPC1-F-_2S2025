@@ -3,216 +3,128 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
  */
 package usacshop.vista;
+import usacshop.controlador.Bitacora;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableCellEditor;
+import java.time.LocalDate;
+import java.time.LocalTime;
 /**
  *
  * @author Katherin Yasmin
  */
 public class PedidosView extends javax.swing.JFrame {
     
-    private JTable tablaPedidos;
-    private DefaultTableModel modeloPedidos;
+   
     /**
      * Creates new form PedidosView
      */
     public PedidosView() {
-        setTitle("Pedidos Activos");
-        setSize(750, 400);
+        initComponents();
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
-        // Panel principal
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-        getContentPane().add(panel);
-
-        // Columnas de la tabla
-        String[] columnas = {"Código", "Fecha", "Código Cliente", "Nombre Cliente", "Total", "Opciones"};
-        modeloPedidos = new DefaultTableModel(null, columnas) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return column == 5; // Solo columna "Opciones" editable
-            }
-        };
-
-        tablaPedidos = new JTable(modeloPedidos);
-
-        // Configurar renderer y editor del botón con Swing puro
-        tablaPedidos.getColumn("Opciones").setCellRenderer(new JTableButtonRenderer());
-        tablaPedidos.getColumn("Opciones").setCellEditor(new JTableButtonEditor());
-
-        // Scroll
-        JScrollPane scroll = new JScrollPane(tablaPedidos);
-        panel.add(scroll);
-
-        // Cargar pedidos desde archivo
+        setTitle("Pedidos Activos");
         cargarPedidos();
     }
-    
     private void cargarPedidos() {
-        modeloPedidos.setRowCount(0);
-        File file = new File("pedidos.txt");
-        if (!file.exists()) return;
+        DefaultTableModel model = (DefaultTableModel) tablaPedidos.getModel();
+        model.setRowCount(0);
 
-        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+        File archivo = new File("pedidos.txt");
+        if (!archivo.exists()) {
+            JOptionPane.showMessageDialog(this, "No hay pedidos pendientes.");
+            return;
+        }
+
+        try (BufferedReader br = new BufferedReader(new FileReader(archivo))) {
             String linea;
             while ((linea = br.readLine()) != null) {
                 String[] datos = linea.split(",");
-                if (datos.length >= 5) {
-                    modeloPedidos.addRow(new Object[]{
-                            datos[0], // Código producto
-                            datos[1], // Fecha
-                            datos[2], // Código cliente
-                            datos[3], // Nombre cliente
-                            datos[4], // Total
-                            "Confirmar"
-                    });
+                if (datos.length == 6 && datos[5].equalsIgnoreCase("Pendiente")){
+                    model.addRow(new Object[]{datos[0], datos[1], datos[2], datos[3]});
                 }
             }
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this, "Error al cargar pedidos: " + e.getMessage());
         }
     }
-    
-     private class JTableButtonRenderer extends JButton implements TableCellRenderer {
-        public JTableButtonRenderer() { setOpaque(true); }
-        @Override
-        public java.awt.Component getTableCellRendererComponent(JTable table, Object value,
-                                                                boolean isSelected, boolean hasFocus,
-                                                                int row, int column) {
-            setText("Confirmar");
-            return this;
-        }
-    }
-    private class JTableButtonEditor extends AbstractCellEditor implements TableCellEditor {
-        private JButton button;
-        private int fila;
+     private void confirmarPedido(String codigoProducto, String codigoCliente, double total) {
+        File archivo = new File("pedidos.txt");
+        File temp = new File("pedidos_temp.txt");
+        File confirmados = new File("pedidos_confirmados.txt");
 
-        public JTableButtonEditor() {
-            button = new JButton("Confirmar");
-            button.addActionListener(e -> {
-                confirmarPedido(fila);
-                fireEditingStopped();
-            });
-        }
-
-        @Override
-        public java.awt.Component getTableCellEditorComponent(JTable table, Object value,
-                                                              boolean isSelected, int row, int column) {
-            this.fila = row;
-            return button;
-        }
-
-        @Override
-        public Object getCellEditorValue() {
-            return "Confirmar";
-        }
-    }
-
-     private void confirmarPedido(int fila) {
-        String codigo = tablaPedidos.getValueAt(fila, 0).toString();
-        String fecha = tablaPedidos.getValueAt(fila, 1).toString();
-
-        File filePedidos = new File("pedidos.txt");
-        File tempFile = new File("pedidos_temp.txt");
-
-        try (BufferedReader br = new BufferedReader(new FileReader(filePedidos));
-             BufferedWriter bw = new BufferedWriter(new FileWriter(tempFile))) {
-
+        try (
+            BufferedReader br = new BufferedReader(new FileReader(archivo));
+            PrintWriter pwTemp = new PrintWriter(new FileWriter(temp));
+            PrintWriter pwConf = new PrintWriter(new FileWriter(confirmados, true))
+        ) {
             String linea;
             while ((linea = br.readLine()) != null) {
-                if (!linea.contains(codigo + "," + fecha)) {
-                    bw.write(linea);
-                    bw.newLine();
+                String[] datos = linea.split(",");
+                if (datos.length == 6) {
+                    if (datos[0].equals(codigoProducto) && datos[2].equals(codigoCliente)) {
+                        // Guardar como confirmado
+                        pwConf.println(datos[0] + "," + datos[1] + "," + datos[2] + "," +
+                                       datos[3] + "," + datos[4] + ",Confirmado");
+                        actualizarStock(codigoProducto);
+                        registrarHistorial("VE001", codigoProducto, total);
+                    } else {
+                        pwTemp.println(linea);
+                    }
                 }
             }
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this, "Error al confirmar pedido: " + e.getMessage());
-            return;
         }
 
-        filePedidos.delete();
-        tempFile.renameTo(filePedidos);
-
-        // Eliminar fila de la tabla
-        modeloPedidos.removeRow(fila);
-        JOptionPane.showMessageDialog(this, "Pedido confirmado: " + codigo);
+        archivo.delete();
+        temp.renameTo(archivo);
     }
+    
+    private void actualizarStock(String codigoProducto) {
+        File stockFile = new File("stock.txt");
+        File temp = new File("stock_temp.txt");
 
-    // Actualiza stock en productos.txt y en memoria
-    private void actualizarStock(String codigoProducto, int cantidad) {
-        File fileProductos = new File("productos.txt");
-        File tempFile = new File("productos_temp.txt");
-
-        try (BufferedReader br = new BufferedReader(new FileReader(fileProductos));
-             BufferedWriter bw = new BufferedWriter(new FileWriter(tempFile))) {
-
+        try (
+            BufferedReader br = new BufferedReader(new FileReader(stockFile));
+            PrintWriter pw = new PrintWriter(new FileWriter(temp))
+        ) {
             String linea;
             while ((linea = br.readLine()) != null) {
                 String[] datos = linea.split(",");
                 if (datos[0].equals(codigoProducto)) {
-                    int stockActual = Integer.parseInt(datos.length >=5 ? datos[4] : "0");
-                    int nuevoStock = stockActual - cantidad;
-                    if (nuevoStock < 0) nuevoStock = 0;
-                    // Reescribir línea con stock actualizado
-                    if (datos.length >=5) {
-                        datos[4] = String.valueOf(nuevoStock);
-                    } else {
-                        // Agregar stock como 5ta columna
-                        String[] tmp = new String[5];
-                        tmp[0] = datos[0]; tmp[1] = datos[1]; tmp[2] = datos[2]; tmp[3] = datos[3]; tmp[4] = String.valueOf(nuevoStock);
-                        datos = tmp;
-                    }
+                    int stock = Integer.parseInt(datos[1]);
+                    stock = Math.max(stock - 1, 0); // Disminuir 1 (ajustar si guardas cantidad)
+                    pw.println(codigoProducto + "," + stock);
+                } else {
+                    pw.println(linea);
                 }
-                bw.write(String.join(",", datos));
-                bw.newLine();
             }
         } catch (IOException e) {
             JOptionPane.showMessageDialog(this, "Error al actualizar stock: " + e.getMessage());
-            return;
         }
 
-        // Reemplazar archivo original
-        fileProductos.delete();
-        tempFile.renameTo(fileProductos);
+        stockFile.delete();
+        temp.renameTo(stockFile);
     }
+    
+     private void registrarHistorial(String vendedor, String codigoProducto, double total) {
+        File archivo = new File("historial.txt");
+        LocalDate fecha = LocalDate.now();
+        LocalTime hora = LocalTime.now().withNano(0);
 
-    // Elimina el pedido de pedidos.txt y de la tabla
-    private void eliminarPedidoArchivo(int fila) {
-        String codigo = tablaPedidos.getValueAt(fila, 0).toString();
-        String fecha = tablaPedidos.getValueAt(fila, 1).toString();
-        File filePedidos = new File("pedidos.txt");
-        File tempFile = new File("pedidos_temp.txt");
-
-        try (BufferedReader br = new BufferedReader(new FileReader(filePedidos));
-             BufferedWriter bw = new BufferedWriter(new FileWriter(tempFile))) {
-
-            String linea;
-            while ((linea = br.readLine()) != null) {
-                if (!linea.contains(codigo + "," + fecha)) {
-                    bw.write(linea);
-                    bw.newLine();
-                }
-            }
+        String linea = fecha + "," + hora + "," + codigoProducto + "," + total + "," + vendedor;
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(archivo, true))) {
+            bw.write(linea);
+            bw.newLine();
         } catch (IOException e) {
-            JOptionPane.showMessageDialog(this, "Error al eliminar pedido: " + e.getMessage());
-            return;
+            JOptionPane.showMessageDialog(this, "Error al registrar historial: " + e.getMessage());
         }
-
-        filePedidos.delete();
-        tempFile.renameTo(filePedidos);
-
-        // Eliminar fila de la tabla
-        modeloPedidos.removeRow(fila);
     }
 
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -222,21 +134,130 @@ public class PedidosView extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jLabel1 = new javax.swing.JLabel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tablaPedidos = new javax.swing.JTable();
+        btnRegresar = new javax.swing.JButton();
+        btnActualizar = new javax.swing.JButton();
+        btnConfirmarPedido = new javax.swing.JButton();
+
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        jLabel1.setText("Pedidos");
+
+        tablaPedidos.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null},
+                {null, null, null, null, null, null}
+            },
+            new String [] {
+                "Codigo", "Fecha generacion", "Codigo cliente", "Nombre", "Total", "Opciones"
+            }
+        ));
+        jScrollPane1.setViewportView(tablaPedidos);
+
+        btnRegresar.setText("Regresar");
+        btnRegresar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnRegresarActionPerformed(evt);
+            }
+        });
+
+        btnActualizar.setText("Actualizar");
+        btnActualizar.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnActualizarActionPerformed(evt);
+            }
+        });
+
+        btnConfirmarPedido.setText("Confirmar pedido");
+        btnConfirmarPedido.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnConfirmarPedidoActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(160, 160, 160)
+                        .addComponent(jLabel1))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(23, 23, 23)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 372, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(89, 89, 89)
+                        .addComponent(btnRegresar)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnActualizar)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(btnConfirmarPedido)))
+                .addContainerGap(49, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jLabel1)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 281, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnRegresar)
+                    .addComponent(btnConfirmarPedido)
+                    .addComponent(btnActualizar))
+                .addContainerGap(14, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void btnConfirmarPedidoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnConfirmarPedidoActionPerformed
+        // TODO add your handling code here:
+        int fila = tablaPedidos.getSelectedRow();
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(this, "Seleccione un pedido para confirmar.");
+            return;
+        }
+
+        String codigoProducto = tablaPedidos.getValueAt(fila, 0).toString();
+        String codigoCliente = tablaPedidos.getValueAt(fila, 2).toString();
+        double total = Double.parseDouble(tablaPedidos.getValueAt(fila, 4).toString());
+
+        try {
+            confirmarPedido(codigoProducto, codigoCliente, total);
+
+            ((DefaultTableModel) tablaPedidos.getModel()).removeRow(fila);
+            JOptionPane.showMessageDialog(this, "Pedido confirmado correctamente.");
+
+            // Registrar evento exitoso en la bitácora
+            Bitacora.registrarEvento("VENDEDOR", "VE001", "CONFIRMAR_PEDIDO", "EXITOSA",
+                                     "Pedido confirmado: Producto " + codigoProducto + ", Cliente " + codigoCliente + ", Total $" + total);
+        } catch (Exception e) {
+            // Registrar evento fallido en la bitácora
+            Bitacora.registrarEvento("VENDEDOR", "VE001", "CONFIRMAR_PEDIDO", "FALLIDA",
+                                     "Error al confirmar pedido: " + e.getMessage());
+            JOptionPane.showMessageDialog(this, "Error al confirmar pedido.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_btnConfirmarPedidoActionPerformed
+
+    private void btnRegresarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnRegresarActionPerformed
+        // TODO add your handling code here:
+        this.dispose();
+        new VendedorView().setVisible(true);
+    }//GEN-LAST:event_btnRegresarActionPerformed
+
+    private void btnActualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarActionPerformed
+        // TODO add your handling code here:
+        cargarPedidos();
+    }//GEN-LAST:event_btnActualizarActionPerformed
 
     /**
      * @param args the command line arguments
@@ -264,5 +285,11 @@ public class PedidosView extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnActualizar;
+    private javax.swing.JButton btnConfirmarPedido;
+    private javax.swing.JButton btnRegresar;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JTable tablaPedidos;
     // End of variables declaration//GEN-END:variables
 }
